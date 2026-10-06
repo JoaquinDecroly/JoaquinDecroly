@@ -32,13 +32,13 @@ const data = await github(
 `/users/${owner}/repos?per_page=100&page=${page}&type=owner&sort=pushed`
 );
 
-```
+
 repos.push(...data);
 
 if (data.length < 100) {
   break;
 }
-```
+
 
 }
 
@@ -113,7 +113,7 @@ for (const repo of repos) {
 try {
 const languages = await getLanguages(repo);
 
-```
+
   for (const [language, bytes] of Object.entries(languages)) {
     languageTotals[language] =
       (languageTotals[language] || 0) + bytes;
@@ -123,7 +123,7 @@ const languages = await getLanguages(repo);
     `No se pudieron leer los lenguajes de ${repo.name}`
   );
 }
-```
+
 
 }
 
@@ -193,14 +193,14 @@ if (item.type !== "blob" && item.type !== "tree") {
 return false;
 }
 
-```
+
 const path = item.path.toLowerCase();
 
 return names.some(name =>
   path === name.toLowerCase() ||
   path.includes(name.toLowerCase())
 );
-```
+
 
 });
 }
@@ -224,7 +224,7 @@ for (const repo of reposToInspect) {
 const result = await getRepoTree(repo);
 const tree = result.tree || [];
 
-```
+
 if (
   hasFile(tree, [".idea"]) ||
   hasExtension(tree, ".iml")
@@ -284,7 +284,7 @@ if (hasExtension(tree, ".fxml")) {
 if (hasExtension(tree, ".sql")) {
   detected.add("MySQL");
 }
-```
+
 
 }
 
