@@ -50,14 +50,6 @@ repo =>
 );
 }
 
-function escapeHtml(value = "") {
-return value
-.replaceAll("&", "&")
-.replaceAll("<", "<")
-.replaceAll(">", ">")
-.replaceAll('"', """);
-}
-
 const languageIconMap = {
 JavaScript: "js",
 TypeScript: "ts",
@@ -101,57 +93,18 @@ async function getLanguages(repo) {
 return github(`/repos/${owner}/${repo.name}/languages`);
 }
 
-async function getRepoTree(repo) {
-try {
-return await github(
-`/repos/${owner}/${repo.name}/git/trees/${repo.default_branch}?recursive=1`
-);
-} catch {
-return { tree: [] };
-}
-}
+/*
 
-function calculateProjectScore(repo) {
-const daysSincePush =
-(Date.now() - new Date(repo.pushed_at).getTime()) /
-(1000 * 60 * 60 * 24);
-
-const recencyScore = Math.max(0, 100 - daysSincePush);
-
-const starsScore = repo.stargazers_count * 10;
-const forksScore = repo.forks_count * 5;
-
-const sizeScore = Math.min(repo.size / 100, 20);
-
-return (
-recencyScore +
-starsScore +
-forksScore +
-sizeScore
-);
-}
-
-function projectCard(repo) {
-return `<a href="${repo.html_url}"> <img src="https://github-readme-stats.vercel.app/api/pin/?username=${owner}&repo=${repo.name}&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA"/> </a>`;
-}
-
-async function buildProjects(repos) {
-const sorted = [...repos]
-.filter(repo => !repo.name.toLowerCase().includes("profile"))
-.sort((a, b) => {
-return calculateProjectScore(b) - calculateProjectScore(a);
-});
-
-const selected = sorted.slice(0, 4);
-
-if (selected.length === 0) {
-return `<p align="center">Todavía no hay proyectos públicos disponibles.</p>`;
-}
-
-return selected
-.map(projectCard)
-.join("\n\n");
-}
+* ─────────────────────────────────────────────
+* STACK TECNOLÓGICO
+* ─────────────────────────────────────────────
+*
+* Solo mostramos un lenguaje si representa al menos
+* el 5% del código total detectado.
+*
+* Esto evita que aparezcan lenguajes residuales
+* utilizados en cantidades muy pequeñas.
+  */
 
 async function buildStack(repos) {
 const languageTotals = {};
@@ -165,25 +118,51 @@ const languages = await getLanguages(repo);
     languageTotals[language] =
       (languageTotals[language] || 0) + bytes;
   }
-} catch (error) {
-  console.log(`No se pudieron leer lenguajes de ${repo.name}`);
+} catch {
+  console.log(
+    `No se pudieron leer los lenguajes de ${repo.name}`
+  );
 }
 ```
 
 }
 
-const languages = Object.entries(languageTotals)
-.sort((a, b) => b[1] - a[1])
-.map(([language]) => language)
-.filter(language => languageIconMap[language])
-.slice(0, 10);
+const totalBytes = Object.values(languageTotals)
+.reduce((total, bytes) => total + bytes, 0);
 
-if (languages.length === 0) {
+if (totalBytes === 0) {
 return `<p align="center">No hay lenguajes detectados todavía.</p>`;
 }
 
+const MIN_PERCENTAGE = 5;
+
+const languages = Object.entries(languageTotals)
+.map(([language, bytes]) => ({
+language,
+bytes,
+percentage: (bytes / totalBytes) * 100,
+}))
+.filter(item =>
+item.percentage >= MIN_PERCENTAGE &&
+languageIconMap[item.language]
+)
+.sort((a, b) => b.bytes - a.bytes)
+.slice(0, 10);
+
+if (languages.length === 0) {
+return `<p align="center">Todavía no hay suficientes lenguajes relevantes.</p>`;
+}
+
+console.log("\nLenguajes detectados:");
+
+for (const item of languages) {
+console.log(
+`${item.language}: ${item.percentage.toFixed(2)}%`
+);
+}
+
 const icons = languages
-.map(language => languageIconMap[language])
+.map(item => languageIconMap[item.language])
 .join(",");
 
 return `<p align="center"> <img src="https://skillicons.dev/icons?i=${icons}&perline=8" alt="Tecnologías detectadas"/>
@@ -191,15 +170,34 @@ return `<p align="center"> <img src="https://skillicons.dev/icons?i=${icons}&per
 </p>`;
 }
 
+/*
+
+* ─────────────────────────────────────────────
+* ENTORNO DE DESARROLLO
+* ─────────────────────────────────────────────
+  */
+
+async function getRepoTree(repo) {
+try {
+return await github(
+`/repos/${owner}/${repo.name}/git/trees/${repo.default_branch}?recursive=1`
+);
+} catch {
+return { tree: [] };
+}
+}
+
 function hasFile(tree, names) {
 return tree.some(item => {
-if (item.type !== "blob") return false;
+if (item.type !== "blob" && item.type !== "tree") {
+return false;
+}
 
 ```
 const path = item.path.toLowerCase();
 
 return names.some(name =>
-  path.endsWith(name.toLowerCase()) ||
+  path === name.toLowerCase() ||
   path.includes(name.toLowerCase())
 );
 ```
@@ -234,9 +232,7 @@ if (
   detected.add("IntelliJ IDEA");
 }
 
-if (
-  hasFile(tree, [".vscode"])
-) {
+if (hasFile(tree, [".vscode"])) {
   detected.add("VS Code");
 }
 
@@ -256,9 +252,7 @@ if (
   detected.add("Docker");
 }
 
-if (
-  hasFile(tree, ["pom.xml"])
-) {
+if (hasFile(tree, ["pom.xml"])) {
   detected.add("Maven");
 }
 
@@ -279,28 +273,15 @@ if (
   detected.add("Node.js");
 }
 
-if (
-  hasFile(tree, [".github/workflows"])
-) {
+if (hasFile(tree, [".github/workflows"])) {
   detected.add("GitHub Actions");
 }
 
-if (
-  hasExtension(tree, ".fxml")
-) {
+if (hasExtension(tree, ".fxml")) {
   detected.add("JavaFX");
 }
 
-if (
-  hasExtension(tree, ".jsp") ||
-  hasExtension(tree, ".java")
-) {
-  detected.add("Eclipse");
-}
-
-if (
-  hasExtension(tree, ".sql")
-) {
+if (hasExtension(tree, ".sql")) {
   detected.add("MySQL");
 }
 ```
@@ -340,17 +321,99 @@ return `<p align="center">
 </p>`;
 }
 
-function replaceSection(content, startMarker, endMarker, replacement) {
-const start = content.indexOf(startMarker);
-const end = content.indexOf(endMarker);
+/*
 
-if (start === -1 || end === -1 || end < start) {
-throw new Error(
-`No se encontraron los marcadores ${startMarker} / ${endMarker}`
+* ─────────────────────────────────────────────
+* PROYECTOS
+* ─────────────────────────────────────────────
+  */
+
+function calculateProjectScore(repo) {
+const daysSincePush =
+(Date.now() - new Date(repo.pushed_at).getTime()) /
+(1000 * 60 * 60 * 24);
+
+const recencyScore =
+Math.max(0, 100 - daysSincePush);
+
+const starsScore =
+repo.stargazers_count * 10;
+
+const forksScore =
+repo.forks_count * 5;
+
+const sizeScore =
+Math.min(repo.size / 100, 20);
+
+return (
+recencyScore +
+starsScore +
+forksScore +
+sizeScore
 );
 }
 
-const startContent = start + startMarker.length;
+function projectCard(repo) {
+return `<a href="${repo.html_url}"> <img src="https://github-readme-stats.vercel.app/api/pin/?username=${owner}&repo=${repo.name}&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA"/> </a>`;
+}
+
+async function buildProjects(repos) {
+const sorted = [...repos]
+.filter(repo =>
+!repo.name
+.toLowerCase()
+.includes("profile")
+)
+.sort(
+(a, b) =>
+calculateProjectScore(b) -
+calculateProjectScore(a)
+);
+
+const selected = sorted.slice(0, 4);
+
+if (selected.length === 0) {
+return `<p align="center">
+Todavía no hay proyectos públicos disponibles.
+
+</p>`;
+  }
+
+return selected
+.map(projectCard)
+.join("\n\n");
+}
+
+/*
+
+* ─────────────────────────────────────────────
+* REEMPLAZAR BLOQUES AUTOMÁTICOS
+* ─────────────────────────────────────────────
+  */
+
+function replaceSection(
+content,
+startMarker,
+endMarker,
+replacement
+) {
+const start = content.indexOf(startMarker);
+const end = content.indexOf(endMarker);
+
+if (
+start === -1 ||
+end === -1 ||
+end < start
+) {
+throw new Error(
+`No se encontraron los marcadores:
+${startMarker}
+${endMarker}`
+);
+}
+
+const startContent =
+start + startMarker.length;
 
 return (
 content.slice(0, startContent) +
@@ -361,69 +424,102 @@ content.slice(end)
 );
 }
 
+/*
+
+* ─────────────────────────────────────────────
+* MAIN
+* ─────────────────────────────────────────────
+  */
+
 async function main() {
-const fs = await import("node:fs/promises");
+const fs =
+await import("node:fs/promises");
 
-console.log("Buscando repositorios...");
+console.log(
+`Analizando GitHub de ${owner}...`
+);
 
-const repos = await getAllRepos();
+const repos =
+await getAllRepos();
 
-console.log(`Repositorios encontrados: ${repos.length}`);
+console.log(
+`Repositorios encontrados: ${repos.length}`
+);
 
-console.log("Analizando lenguajes...");
-const stack = await buildStack(repos);
+console.log(
+"Analizando lenguajes..."
+);
 
-console.log("Analizando entorno...");
-const tools = await detectEnvironment(repos);
-const environment = buildToolIcons(tools);
+const stack =
+await buildStack(repos);
 
-console.log("Seleccionando proyectos...");
-const projects = await buildProjects(repos);
+console.log(
+"Analizando entorno..."
+);
 
-let readme = await fs.readFile("README.md", "utf8");
+const tools =
+await detectEnvironment(repos);
 
-readme = replaceSection(
+const environment =
+buildToolIcons(tools);
+
+console.log(
+"Seleccionando proyectos..."
+);
+
+const projects =
+await buildProjects(repos);
+
+let readme =
+await fs.readFile(
+"README.md",
+"utf8"
+);
+
+readme =
+replaceSection(
 readme,
 "<!-- AUTO-STACK:START -->",
 "<!-- AUTO-STACK:END -->",
 stack
 );
 
-readme = replaceSection(
+readme =
+replaceSection(
 readme,
 "<!-- AUTO-ENV:START -->",
 "<!-- AUTO-ENV:END -->",
 environment
 );
 
-readme = replaceSection(
+readme =
+replaceSection(
 readme,
 "<!-- AUTO-PROJECTS:START -->",
 "<!-- AUTO-PROJECTS:END -->",
 projects
 );
 
-await fs.writeFile("README.md", readme);
+await fs.writeFile(
+"README.md",
+readme
+);
 
-console.log("README actualizado correctamente.");
-
-console.log("Stack:", stack);
-console.log("Entorno:", tools);
 console.log(
-"Proyectos:",
-repos
-.filter(repo => !repo.name.toLowerCase().includes("profile"))
-.sort(
-(a, b) =>
-calculateProjectScore(b) -
-calculateProjectScore(a)
-)
-.slice(0, 4)
-.map(repo => repo.name)
+"\n✅ README actualizado correctamente."
+);
+
+console.log(
+"🛠️ Entorno:",
+tools.join(", ")
 );
 }
 
 main().catch(error => {
-console.error(error);
+console.error(
+"❌ Error:",
+error
+);
+
 process.exit(1);
 });
