@@ -16,12 +16,10 @@ contents: write
 
 jobs:
 update-profile:
-
-```
 runs-on: ubuntu-latest
 
+```
 steps:
-
   - name: Descargar perfil
     uses: actions/checkout@v4
 
