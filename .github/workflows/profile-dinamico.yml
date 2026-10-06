@@ -1,45 +1,51 @@
-```yaml
 name: Actualizar perfil dinámico
 
 on:
-  schedule:
-    - cron: "17 3 * * *"
+schedule:
+- cron: "17 3 * * *"
 
-  workflow_dispatch:
+workflow_dispatch:
 
-  push:
-    paths:
-      - ".github/workflows/profile-dinamico.yml"
-      - "scripts/update-profile.mjs"
+push:
+paths:
+- ".github/workflows/profile-dinamico.yml"
+- "scripts/update-profile.mjs"
 
 permissions:
-  contents: write
+contents: write
 
 jobs:
-  update-profile:
-    runs-on: ubuntu-latest
+update-profile:
 
-    steps:
-      - name: Descargar perfil
-        uses: actions/checkout@v4
-
-      - name: Analizar repositorios y actualizar README
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_OWNER: JoaquinDecroly
-        run: node scripts/update-profile.mjs
-
-      - name: Guardar cambios
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git add README.md
-
-          if git diff --cached --quiet; then
-            echo "No hay cambios en el perfil."
-          else
-            git commit -m "chore: actualizar perfil dinámico"
-            git push
-          fi
 ```
+runs-on: ubuntu-latest
+
+steps:
+
+  - name: Descargar perfil
+    uses: actions/checkout@v4
+
+  - name: Configurar Node.js
+    uses: actions/setup-node@v4
+    with:
+      node-version: 20
+
+  - name: Analizar repositorios y actualizar README
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_OWNER: JoaquinDecroly
+    run: node scripts/update-profile.mjs
+
+  - name: Guardar cambios
+    run: |
+      git config user.name "github-actions[bot]"
+      git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      git add README.md
+
+      if git diff --cached --quiet; then
+        echo "No hay cambios en el perfil."
+      else
+        git commit -m "chore: actualizar perfil dinámico"
+        git push
+      fi
