@@ -1,626 +1,429 @@
-
-import fs from "node:fs/promises";
-
-const OWNER = process.env.GITHUB_OWNER || "JoaquinDecroly";
-const TOKEN = process.env.GITHUB_TOKEN;
-
-const README = "README.md";
 const API = "https://api.github.com";
-const API_VERSION = "2026-03-10";
 
-if (!TOKEN) {
-  throw new Error("Falta GITHUB_TOKEN.");
+const owner = process.env.GITHUB_OWNER || "JoaquinDecroly";
+const token = process.env.GITHUB_TOKEN;
+
+if (!token) {
+throw new Error("Falta GITHUB_TOKEN");
 }
+
+const headers = {
+Accept: "application/vnd.github+json",
+Authorization: `Bearer ${token}`,
+"X-GitHub-Api-Version": "2022-11-28",
+};
 
 async function github(path) {
-  const response = await fetch(`${API}${path}`, {
-    headers: {
-      Accept: "application/vnd.github+json",
-      Authorization: `Bearer ${TOKEN}`,
-      "X-GitHub-Api-Version": API_VERSION,
-      "User-Agent": `${OWNER}-profile-updater`,
-    },
-  });
+const response = await fetch(`${API}${path}`, { headers });
 
-  if (!response.ok) {
-    const body = await response.text();
-    throw new Error(`GitHub API ${response.status}: ${body}`);
-  }
-
-  return response.json();
+if (!response.ok) {
+const body = await response.text();
+throw new Error(`GitHub API ${response.status}: ${body}`);
 }
 
-async function listRepos() {
-  const repos = [];
-
-  for (let page = 1; page <= 10; page++) {
-    const batch = await github(
-      `/users/${encodeURIComponent(
-        OWNER
-      )}/repos?per_page=100&page=${page}&type=owner&sort=pushed&direction=desc`
-    );
-
-    repos.push(...batch);
-
-    if (batch.length < 100) {
-      break;
-    }
-  }
-
-  return repos;
+return response.json();
 }
 
-function pathSegments(path) {
-  return path.split("/").map(encodeURIComponent).join("/");
+async function getAllRepos() {
+const repos = [];
+
+for (let page = 1; page <= 10; page++) {
+const data = await github(
+`/users/${owner}/repos?per_page=100&page=${page}&type=owner&sort=pushed`
+);
+
+```
+repos.push(...data);
+
+if (data.length < 100) {
+  break;
+}
+```
+
 }
 
-async function readRepoFile(repo, path) {
-  try {
-    const data = await github(
-      `/repos/${encodeURIComponent(OWNER)}/${encodeURIComponent(
-        repo
-      )}/contents/${pathSegments(path)}`
-    );
-
-    if (data.type !== "file" || !data.content) {
-      return "";
-    }
-
-    return Buffer.from(
-      data.content.replace(/\n/g, ""),
-      "base64"
-    ).toString("utf8");
-  } catch {
-    return "";
-  }
+return repos.filter(
+repo =>
+!repo.fork &&
+!repo.archived &&
+!repo.private
+);
 }
 
-function hasPath(paths, matcher) {
-  return paths.some((path) => matcher.test(path));
-}
-
-function hasAny(paths, values) {
-  return values.some(
-    (value) =>
-      paths.includes(value) ||
-      paths.some((path) => path.endsWith(`/${value}`))
-  );
+function escapeHtml(value = "") {
+return value
+.replaceAll("&", "&")
+.replaceAll("<", "<")
+.replaceAll(">", ">")
+.replaceAll('"', """);
 }
 
 const languageIconMap = {
-  JavaScript: "js",
-  TypeScript: "ts",
-  HTML: "html",
-  CSS: "css",
-  Java: "java",
-  PHP: "php",
-  Python: "python",
-  C: "c",
-  "C++": "cpp",
-  "C#": "cs",
-  Kotlin: "kotlin",
-  Swift: "swift",
-  Go: "go",
-  Rust: "rust",
-  Ruby: "ruby",
-  Dart: "dart",
-  Shell: "bash",
-  SQL: "mysql",
+JavaScript: "js",
+TypeScript: "ts",
+HTML: "html",
+CSS: "css",
+Java: "java",
+PHP: "php",
+Python: "python",
+C: "c",
+"C++": "cpp",
+"C#": "cs",
+Kotlin: "kotlin",
+Swift: "swift",
+Go: "go",
+Rust: "rust",
+Ruby: "ruby",
+Dart: "dart",
+Shell: "bash",
+SQL: "mysql",
 };
 
 const toolIconMap = {
-  "IntelliJ IDEA": "idea",
-  Eclipse: "eclipse",
-  "VS Code": "vscode",
-  Git: "git",
-  GitHub: "github",
-  Docker: "docker",
-  "GitHub Actions": "githubactions",
-  MySQL: "mysql",
-  PostgreSQL: "postgresql",
-  SQLite: "sqlite",
-  Maven: "maven",
-  Gradle: "gradle",
-  "Node.js": "nodejs",
-  Spring: "spring",
-  Bootstrap: "bootstrap",
+"IntelliJ IDEA": "idea",
+Eclipse: "eclipse",
+"VS Code": "vscode",
+Git: "git",
+GitHub: "github",
+Docker: "docker",
+"GitHub Actions": "githubactions",
+MySQL: "mysql",
+PostgreSQL: "postgresql",
+SQLite: "sqlite",
+Maven: "maven",
+Gradle: "gradle",
+"Node.js": "nodejs",
+Spring: "spring",
+Bootstrap: "bootstrap",
 };
 
-function iconStrip(ids, perLine = 7) {
-  if (!ids.length) {
-    return "";
-  }
-
-  return `<img src="https://skillicons.dev/icons?i=${ids.join(
-    ","
-  )}&perline=${perLine}"/>`;
+async function getLanguages(repo) {
+return github(`/repos/${owner}/${repo.name}/languages`);
 }
 
-function replaceBlock(text, name, replacement) {
-  const start = `<!-- ${name}:START -->`;
-  const end = `<!-- ${name}:END -->`;
-
-  const regex = new RegExp(
-    `${escapeRegex(start)}[\\s\\S]*?${escapeRegex(end)}`,
-    "m"
-  );
-
-  if (!regex.test(text)) {
-    throw new Error(
-      `No encuentro los marcadores ${start} y ${end} en README.md.`
-    );
-  }
-
-  return text.replace(regex, replacement);
+async function getRepoTree(repo) {
+try {
+return await github(
+`/repos/${owner}/${repo.name}/git/trees/${repo.default_branch}?recursive=1`
+);
+} catch {
+return { tree: [] };
+}
 }
 
-function escapeRegex(value) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+function calculateProjectScore(repo) {
+const daysSincePush =
+(Date.now() - new Date(repo.pushed_at).getTime()) /
+(1000 * 60 * 60 * 24);
+
+const recencyScore = Math.max(0, 100 - daysSincePush);
+
+const starsScore = repo.stargazers_count * 10;
+const forksScore = repo.forks_count * 5;
+
+const sizeScore = Math.min(repo.size / 100, 20);
+
+return (
+recencyScore +
+starsScore +
+forksScore +
+sizeScore
+);
+}
+
+function projectCard(repo) {
+return `<a href="${repo.html_url}"> <img src="https://github-readme-stats.vercel.app/api/pin/?username=${owner}&repo=${repo.name}&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA"/> </a>`;
+}
+
+async function buildProjects(repos) {
+const sorted = [...repos]
+.filter(repo => !repo.name.toLowerCase().includes("profile"))
+.sort((a, b) => {
+return calculateProjectScore(b) - calculateProjectScore(a);
+});
+
+const selected = sorted.slice(0, 4);
+
+if (selected.length === 0) {
+return `<p align="center">Todavía no hay proyectos públicos disponibles.</p>`;
+}
+
+return selected
+.map(projectCard)
+.join("\n\n");
+}
+
+async function buildStack(repos) {
+const languageTotals = {};
+
+for (const repo of repos) {
+try {
+const languages = await getLanguages(repo);
+
+```
+  for (const [language, bytes] of Object.entries(languages)) {
+    languageTotals[language] =
+      (languageTotals[language] || 0) + bytes;
+  }
+} catch (error) {
+  console.log(`No se pudieron leer lenguajes de ${repo.name}`);
+}
+```
+
+}
+
+const languages = Object.entries(languageTotals)
+.sort((a, b) => b[1] - a[1])
+.map(([language]) => language)
+.filter(language => languageIconMap[language])
+.slice(0, 10);
+
+if (languages.length === 0) {
+return `<p align="center">No hay lenguajes detectados todavía.</p>`;
+}
+
+const icons = languages
+.map(language => languageIconMap[language])
+.join(",");
+
+return `<p align="center"> <img src="https://skillicons.dev/icons?i=${icons}&perline=8" alt="Tecnologías detectadas"/>
+
+</p>`;
+}
+
+function hasFile(tree, names) {
+return tree.some(item => {
+if (item.type !== "blob") return false;
+
+```
+const path = item.path.toLowerCase();
+
+return names.some(name =>
+  path.endsWith(name.toLowerCase()) ||
+  path.includes(name.toLowerCase())
+);
+```
+
+});
+}
+
+function hasExtension(tree, extension) {
+return tree.some(item =>
+item.type === "blob" &&
+item.path.toLowerCase().endsWith(extension)
+);
+}
+
+async function detectEnvironment(repos) {
+const detected = new Set();
+
+detected.add("Git");
+detected.add("GitHub");
+
+const reposToInspect = repos.slice(0, 20);
+
+for (const repo of reposToInspect) {
+const result = await getRepoTree(repo);
+const tree = result.tree || [];
+
+```
+if (
+  hasFile(tree, [".idea"]) ||
+  hasExtension(tree, ".iml")
+) {
+  detected.add("IntelliJ IDEA");
+}
+
+if (
+  hasFile(tree, [".vscode"])
+) {
+  detected.add("VS Code");
+}
+
+if (
+  hasFile(tree, [".project"]) ||
+  hasFile(tree, [".classpath"]) ||
+  hasFile(tree, [".settings"])
+) {
+  detected.add("Eclipse");
+}
+
+if (
+  hasFile(tree, ["dockerfile"]) ||
+  hasFile(tree, ["docker-compose.yml"]) ||
+  hasFile(tree, ["compose.yml"])
+) {
+  detected.add("Docker");
+}
+
+if (
+  hasFile(tree, ["pom.xml"])
+) {
+  detected.add("Maven");
+}
+
+if (
+  hasFile(tree, ["build.gradle"]) ||
+  hasFile(tree, ["settings.gradle"]) ||
+  hasFile(tree, ["build.gradle.kts"])
+) {
+  detected.add("Gradle");
+}
+
+if (
+  hasFile(tree, ["package.json"]) ||
+  hasFile(tree, ["package-lock.json"]) ||
+  hasFile(tree, ["yarn.lock"]) ||
+  hasFile(tree, ["pnpm-lock.yaml"])
+) {
+  detected.add("Node.js");
+}
+
+if (
+  hasFile(tree, [".github/workflows"])
+) {
+  detected.add("GitHub Actions");
+}
+
+if (
+  hasExtension(tree, ".fxml")
+) {
+  detected.add("JavaFX");
+}
+
+if (
+  hasExtension(tree, ".jsp") ||
+  hasExtension(tree, ".java")
+) {
+  detected.add("Eclipse");
+}
+
+if (
+  hasExtension(tree, ".sql")
+) {
+  detected.add("MySQL");
+}
+```
+
+}
+
+const ordered = [
+"Git",
+"GitHub",
+"IntelliJ IDEA",
+"Eclipse",
+"VS Code",
+"Docker",
+"Maven",
+"Gradle",
+"Node.js",
+"Spring",
+"MySQL",
+"GitHub Actions",
+];
+
+return ordered.filter(tool => detected.has(tool));
+}
+
+function buildToolIcons(tools) {
+const icons = tools
+.map(tool => toolIconMap[tool])
+.filter(Boolean);
+
+if (icons.length === 0) {
+return `<p align="center">Herramientas detectadas automáticamente.</p>`;
+}
+
+return `<p align="center">
+<img src="https://skillicons.dev/icons?i=${icons.join(",")}&perline=8" alt="Entorno de desarrollo"/>
+
+</p>`;
+}
+
+function replaceSection(content, startMarker, endMarker, replacement) {
+const start = content.indexOf(startMarker);
+const end = content.indexOf(endMarker);
+
+if (start === -1 || end === -1 || end < start) {
+throw new Error(
+`No se encontraron los marcadores ${startMarker} / ${endMarker}`
+);
+}
+
+const startContent = start + startMarker.length;
+
+return (
+content.slice(0, startContent) +
+"\n" +
+replacement +
+"\n" +
+content.slice(end)
+);
 }
 
 async function main() {
-  const allRepos = await listRepos();
+const fs = await import("node:fs/promises");
 
-  const profileRepo =
-    process.env.GITHUB_REPOSITORY?.split("/")[1] || OWNER;
+console.log("Buscando repositorios...");
 
-  const repos = allRepos.filter(
-    (repo) =>
-      !repo.fork &&
-      !repo.archived &&
-      repo.name !== profileRepo
-  );
+const repos = await getAllRepos();
 
-  if (!repos.length) {
-    throw new Error(
-      "No se encontraron repositorios públicos válidos."
-    );
-  }
+console.log(`Repositorios encontrados: ${repos.length}`);
 
-  const languageTotals = new Map();
+console.log("Analizando lenguajes...");
+const stack = await buildStack(repos);
 
-  const detectedTools = new Set([
-    "Git",
-    "GitHub",
-  ]);
+console.log("Analizando entorno...");
+const tools = await detectEnvironment(repos);
+const environment = buildToolIcons(tools);
 
-  /*
-   * ==========================================
-   * LENGUAJES
-   * ==========================================
-   */
+console.log("Seleccionando proyectos...");
+const projects = await buildProjects(repos);
 
-  for (const repo of repos) {
-    const languages = await github(
-      `/repos/${encodeURIComponent(
-        OWNER
-      )}/${encodeURIComponent(repo.name)}/languages`
-    );
+let readme = await fs.readFile("README.md", "utf8");
 
-    for (const [language, bytes] of Object.entries(languages)) {
-      languageTotals.set(
-        language,
-        (languageTotals.get(language) || 0) + bytes
-      );
-    }
-  }
+readme = replaceSection(
+readme,
+"<!-- AUTO-STACK:START -->",
+"<!-- AUTO-STACK:END -->",
+stack
+);
 
-  /*
-   * ==========================================
-   * HERRAMIENTAS / ENTORNO
-   * ==========================================
-   *
-   * Analizamos los repositorios más recientes.
-   * De esta manera el perfil puede crecer sin
-   * disparar innecesariamente las peticiones.
-   */
+readme = replaceSection(
+readme,
+"<!-- AUTO-ENV:START -->",
+"<!-- AUTO-ENV:END -->",
+environment
+);
 
-  const reposToScan = repos.slice(0, 15);
+readme = replaceSection(
+readme,
+"<!-- AUTO-PROJECTS:START -->",
+"<!-- AUTO-PROJECTS:END -->",
+projects
+);
 
-  for (const repo of reposToScan) {
-    let tree;
+await fs.writeFile("README.md", readme);
 
-    try {
-      tree = await github(
-        `/repos/${encodeURIComponent(
-          OWNER
-        )}/${encodeURIComponent(
-          repo.name
-        )}/git/trees/${encodeURIComponent(
-          repo.default_branch
-        )}?recursive=1`
-      );
-    } catch {
-      continue;
-    }
+console.log("README actualizado correctamente.");
 
-    const paths = (tree.tree || [])
-      .filter(
-        (item) =>
-          item.type === "blob" ||
-          item.type === "tree"
-      )
-      .map((item) =>
-        item.path.replaceAll("\\", "/")
-      );
-
-    /*
-     * IDE
-     */
-
-    if (
-      hasPath(
-        paths,
-        /(^|\/)\.idea(\/|$)|\.iml$/i
-      )
-    ) {
-      detectedTools.add("IntelliJ IDEA");
-    }
-
-    if (
-      hasPath(
-        paths,
-        /(^|\/)\.vscode(\/|$)/i
-      )
-    ) {
-      detectedTools.add("VS Code");
-    }
-
-    if (
-      hasAny(paths, [
-        ".project",
-        ".classpath",
-      ]) ||
-      hasPath(
-        paths,
-        /(^|\/)\.settings(\/|$)/i
-      )
-    ) {
-      detectedTools.add("Eclipse");
-    }
-
-    /*
-     * DOCKER
-     */
-
-    if (
-      hasPath(
-        paths,
-        /(^|\/)Dockerfile$/i
-      ) ||
-      hasPath(
-        paths,
-        /(^|\/)docker-compose(?:\.ya?ml)?$/i
-      )
-    ) {
-      detectedTools.add("Docker");
-    }
-
-    /*
-     * GITHUB ACTIONS
-     */
-
-    if (
-      hasPath(
-        paths,
-        /(^|\/)\.github\/workflows\//i
-      )
-    ) {
-      detectedTools.add("GitHub Actions");
-    }
-
-    /*
-     * BUILD TOOLS
-     */
-
-    if (
-      hasPath(
-        paths,
-        /(^|\/)pom\.xml$/i
-      )
-    ) {
-      detectedTools.add("Maven");
-    }
-
-    if (
-      hasPath(
-        paths,
-        /(^|\/)build\.gradle(?:\.kts)?$/i
-      ) ||
-      hasPath(
-        paths,
-        /(^|\/)settings\.gradle(?:\.kts)?$/i
-      )
-    ) {
-      detectedTools.add("Gradle");
-    }
-
-    /*
-     * NODE
-     */
-
-    if (
-      hasAny(paths, [
-        "package.json",
-        "package-lock.json",
-        "yarn.lock",
-        "pnpm-lock.yaml",
-      ])
-    ) {
-      detectedTools.add("Node.js");
-    }
-
-    /*
-     * JAVAFX
-     */
-
-    if (
-      hasPath(
-        paths,
-        /(^|\/).+\.fxml$/i
-      )
-    ) {
-      detectedTools.add("JavaFX");
-    }
-
-    /*
-     * SERVLET / JSP
-     */
-
-    if (
-      hasPath(
-        paths,
-        /(^|\/).+\.jsp$/i
-      ) &&
-      hasPath(
-        paths,
-        /(^|\/).+\.java$/i
-      )
-    ) {
-      detectedTools.add("Servlet/JSP");
-    }
-
-    /*
-     * SQL
-     */
-
-    if (
-      hasPath(
-        paths,
-        /(^|\/).+\.sql$/i
-      )
-    ) {
-      detectedTools.add("MySQL");
-    }
-
-    /*
-     * MANIFESTS
-     */
-
-    const manifests = [
-      "pom.xml",
-      "package.json",
-      "composer.json",
-      "build.gradle",
-      "build.gradle.kts",
-    ];
-
-    const existingManifests = manifests.filter(
-      (manifest) =>
-        paths.some(
-          (path) =>
-            path.toLowerCase() ===
-            manifest.toLowerCase()
-        )
-    );
-
-    for (const manifest of existingManifests.slice(0, 2)) {
-      const content = await readRepoFile(
-        repo.name,
-        manifest
-      );
-
-      const lower = content.toLowerCase();
-
-      if (
-        lower.includes("spring-boot") ||
-        lower.includes(
-          "org.springframework.boot"
-        )
-      ) {
-        detectedTools.add("Spring");
-      }
-
-      if (lower.includes("bootstrap")) {
-        detectedTools.add("Bootstrap");
-      }
-
-      if (
-        lower.includes("mysql-connector") ||
-        lower.includes("mysql2")
-      ) {
-        detectedTools.add("MySQL");
-      }
-
-      if (
-        lower.includes("javafx") ||
-        lower.includes("org.openjfx")
-      ) {
-        detectedTools.add("JavaFX");
-      }
-    }
-  }
-
-  /*
-   * ==========================================
-   * ORDENAR LENGUAJES
-   * ==========================================
-   */
-
-  const sortedLanguages = [
-    ...languageTotals.entries(),
-  ]
-    .sort((a, b) => b[1] - a[1])
-    .map(([language]) => language);
-
-  const knownLanguageIds = sortedLanguages
-    .map(
-      (language) =>
-        languageIconMap[language]
-    )
-    .filter(Boolean)
-    .filter(
-      (id, index, array) =>
-        array.indexOf(id) === index
-    )
-    .slice(0, 14);
-
-  const unknownLanguages =
-    sortedLanguages.filter(
-      (language) =>
-        !languageIconMap[language]
-    );
-
-  /*
-   * ==========================================
-   * ICONOS DE ENTORNO
-   * ==========================================
-   */
-
-  const knownToolIds = [
-    ...detectedTools,
-  ]
-    .map(
-      (tool) =>
-        toolIconMap[tool]
-    )
-    .filter(Boolean)
-    .filter(
-      (id, index, array) =>
-        array.indexOf(id) === index
-    );
-
-  const unknownTools = [
-    ...detectedTools,
-  ].filter(
-    (tool) =>
-      !toolIconMap[tool]
-  );
-
-  /*
-   * ==========================================
-   * GENERAR STACK
-   * ==========================================
-   */
-
-  const stackBlock = [
-    "<!-- AUTO-STACK:START -->",
-    "<div align=\"center\">",
-    "",
-    iconStrip(
-      knownLanguageIds,
-      7
-    ),
-    "",
-    `<strong>Lenguajes detectados:</strong> ${
-      sortedLanguages
-        .slice(0, 12)
-        .map(
-          (language) =>
-            `\`${language}\``
-        )
-        .join(" · ") ||
-      "Sin datos"
-    }`,
-    unknownLanguages.length
-      ? `<br><sub>Otros lenguajes detectados: ${unknownLanguages
-          .slice(0, 6)
-          .join(" · ")}</sub>`
-      : "",
-    "",
-    "</div>",
-    "<!-- AUTO-STACK:END -->",
-  ]
-    .filter(Boolean)
-    .join("\n");
-
-  /*
-   * ==========================================
-   * GENERAR ENTORNO
-   * ==========================================
-   */
-
-  const envBlock = [
-    "<!-- AUTO-ENV:START -->",
-    "<div align=\"center\">",
-    "",
-    iconStrip(
-      knownToolIds,
-      7
-    ),
-    "",
-    `<strong>Detectado en mis repositorios:</strong> ${[
-      ...detectedTools,
-    ].join(" · ")}`,
-    unknownTools.length
-      ? `<br><sub>Detectado pero sin icono disponible: ${unknownTools.join(
-          " · "
-        )}</sub>`
-      : "",
-    "",
-    "</div>",
-    "<!-- AUTO-ENV:END -->",
-  ]
-    .filter(Boolean)
-    .join("\n");
-
-  /*
-   * ==========================================
-   * ACTUALIZAR README
-   * ==========================================
-   */
-
-  let readme = await fs.readFile(
-    README,
-    "utf8"
-  );
-
-  readme = replaceBlock(
-    readme,
-    "AUTO-STACK",
-    stackBlock
-  );
-
-  readme = replaceBlock(
-    readme,
-    "AUTO-ENV",
-    envBlock
-  );
-
-  await fs.writeFile(
-    README,
-    readme,
-    "utf8"
-  );
-
-  console.log(
-    `Repositorios analizados: ${repos.length}`
-  );
-
-  console.log(
-    `Lenguajes detectados: ${sortedLanguages.join(
-      ", "
-    )}`
-  );
-
-  console.log(
-    `Entorno detectado: ${[
-      ...detectedTools,
-    ].join(", ")}`
-  );
+console.log("Stack:", stack);
+console.log("Entorno:", tools);
+console.log(
+"Proyectos:",
+repos
+.filter(repo => !repo.name.toLowerCase().includes("profile"))
+.sort(
+(a, b) =>
+calculateProjectScore(b) -
+calculateProjectScore(a)
+)
+.slice(0, 4)
+.map(repo => repo.name)
+);
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
+main().catch(error => {
+console.error(error);
+process.exit(1);
 });
