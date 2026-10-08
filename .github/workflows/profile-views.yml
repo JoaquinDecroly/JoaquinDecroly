@@ -20,170 +20,41 @@ jobs:
         id: views
         shell: bash
         run: |
-          echo "Consultando contador..."
-
           RESPONSE=$(curl -L --silent --show-error --fail \
             "https://komarev.com/ghpvc/?username=JoaquinDecroly&style=flat")
 
-          echo "Respuesta recibida:"
           echo "$RESPONSE"
 
           VIEWS=$(echo "$RESPONSE" | grep -oE '[0-9]+' | tail -1)
 
-          if [ -z "$VIEWS" ]; then
-            echo "ERROR: No se encontró el número de visitas."
+          if ! [[ "$VIEWS" =~ ^[0-9]+$ ]]; then
+            echo "ERROR: contador inválido: $VIEWS"
             exit 1
           fi
 
-          echo "Visitas encontradas: $VIEWS"
+          echo "Visitas: $VIEWS"
           echo "VIEWS=$VIEWS" >> "$GITHUB_OUTPUT"
 
-      - name: Generar SVG personalizado
+      - name: Actualizar solamente el número del SVG
         env:
           VIEWS: ${{ steps.views.outputs.VIEWS }}
         shell: bash
         run: |
-          echo "Generando SVG con $VIEWS visitas..."
+          FILE="assets/profile-views.svg"
 
-          mkdir -p assets
+          if [ ! -f "$FILE" ]; then
+            echo "ERROR: No existe $FILE"
+            exit 1
+          fi
 
-          cat > assets/profile-views.svg <<'SVG'
-          <svg width="260" height="64" viewBox="0 0 260 64" xmlns="http://www.w3.org/2000/svg">
+          echo "Número nuevo: $VIEWS"
 
-            <defs>
-              <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#0F172A"/>
-                <stop offset="100%" stop-color="#1E3A8A"/>
-              </linearGradient>
+          sed -i -E \
+            "s|(font-size=\"20\"[^>]*>[[:space:]]*)[0-9]+([[:space:]]*</text>)|\1$VIEWS\2|" \
+            "$FILE"
 
-              <filter id="glow">
-                <feGaussianBlur stdDeviation="2.5" result="blur"/>
-                <feMerge>
-                  <feMergeNode in="blur"/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
-
-              <clipPath id="clip">
-                <rect width="260" height="64" rx="16"/>
-              </clipPath>
-            </defs>
-
-            <rect width="260" height="64" rx="16" fill="url(#bg)"/>
-
-            <rect
-              x="1"
-              y="1"
-              width="258"
-              height="62"
-              rx="15"
-              fill="none"
-              stroke="#2563EB"
-              stroke-width="1"
-            />
-
-            <g transform="translate(16 18)" filter="url(#glow)">
-              <path
-                d="M2 14
-                   C6 7 11 4 16 4
-                   C21 4 26 7 30 14
-                   C26 21 21 24 16 24
-                   C11 24 6 21 2 14Z"
-                fill="none"
-                stroke="#FFFFFF"
-                stroke-width="2"
-              />
-
-              <circle
-                cx="16"
-                cy="14"
-                r="4"
-                fill="none"
-                stroke="#60A5FA"
-                stroke-width="2"
-              >
-                <animate
-                  attributeName="r"
-                  values="3;6;3"
-                  dur="1.8s"
-                  repeatCount="indefinite"
-                />
-
-                <animate
-                  attributeName="opacity"
-                  values="1;0.4;1"
-                  dur="1.8s"
-                  repeatCount="indefinite"
-                />
-              </circle>
-            </g>
-
-            <text
-              x="58"
-              y="24"
-              fill="#94A3B8"
-              font-family="Arial, Helvetica, sans-serif"
-              font-size="10"
-              font-weight="600"
-              letter-spacing="1.5"
-            >PROFILE VIEWS</text>
-
-            <text
-              x="58"
-              y="47"
-              fill="#FFFFFF"
-              font-family="Arial, Helvetica, sans-serif"
-              font-size="20"
-              font-weight="700"
-            >VIEWS_PLACEHOLDER</text>
-
-            <circle
-              cx="238"
-              cy="20"
-              r="4"
-              fill="#22C55E"
-            >
-              <animate
-                attributeName="opacity"
-                values="1;0.3;1"
-                dur="1.5s"
-                repeatCount="indefinite"
-              />
-            </circle>
-
-            <g clip-path="url(#clip)">
-              <rect
-                x="-70"
-                y="0"
-                width="40"
-                height="64"
-                fill="#FFFFFF"
-                opacity="0.08"
-                transform="skewX(-20)"
-              >
-                <animate
-                  attributeName="x"
-                  from="-70"
-                  to="300"
-                  dur="3.5s"
-                  repeatCount="indefinite"
-                />
-              </rect>
-            </g>
-
-          </svg>
-          SVG
-
-          sed -i "s/VIEWS_PLACEHOLDER/$VIEWS/g" assets/profile-views.svg
-
-          echo "SVG generado:"
-          cat assets/profile-views.svg
-
-      - name: Comprobar SVG
-        shell: bash
-        run: |
-          grep "PROFILE VIEWS" assets/profile-views.svg
-          grep "font-size=\"20\"" assets/profile-views.svg
+          echo "Resultado:"
+          grep -A1 'font-size="20"' "$FILE"
 
       - name: Guardar cambios
         shell: bash
@@ -194,7 +65,7 @@ jobs:
           git add assets/profile-views.svg
 
           if git diff --cached --quiet; then
-            echo "No hay cambios."
+            echo "El contador no ha cambiado."
           else
             git commit -m "chore: actualizar visitas del perfil"
             git push
