@@ -11,7 +11,7 @@
 <br>
 
 <p align="center">
-  <img src="./assets/visitas.svg" alt="Visitas al repositorio">
+  <img src="./assets/profile-views.svg" alt="Visitas al repositorio">
 </p>
 
 <br><br>
