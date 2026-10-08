@@ -18,176 +18,196 @@ jobs:
 
       - name: Obtener visitas del perfil
         id: views
+        shell: bash
         run: |
-          RESPONSE=$(curl -L --fail --silent --show-error \
-            "https://komarev.com/ghpvc/?username=JoaquinDecroly&label=PROFILE+VIEWS&style=for-the-badge")
+          echo "Consultando contador..."
+
+          RESPONSE=$(curl -L \
+            --silent \
+            --show-error \
+            --fail \
+            "https://komarev.com/ghpvc/?username=JoaquinDecroly&style=flat")
 
           echo "$RESPONSE" > /tmp/komarev.svg
 
-          echo "Respuesta recibida:"
+          echo "Respuesta:"
           cat /tmp/komarev.svg
 
-          VIEWS=$(grep -oE '[0-9]+</text>' /tmp/komarev.svg | head -1 | grep -oE '[0-9]+')
+          # Buscar cualquier número dentro del SVG
+          VIEWS=$(echo "$RESPONSE" | grep -oE '[0-9]+' | tail -1)
 
           if [ -z "$VIEWS" ]; then
-            echo "No se pudo obtener el número de visitas."
+            echo "ERROR: No se encontró el número de visitas."
             exit 1
           fi
 
+          echo "Visitas encontradas: $VIEWS"
+
           echo "VIEWS=$VIEWS" >> "$GITHUB_OUTPUT"
 
-      - name: Generar SVG personalizado
+      - name: Actualizar SVG
         env:
           VIEWS: ${{ steps.views.outputs.VIEWS }}
         run: |
+          echo "Actualizando SVG con: $VIEWS"
+
+          if [ -z "$VIEWS" ]; then
+            echo "ERROR: VIEWS está vacío."
+            exit 1
+          fi
+
           mkdir -p assets
 
           cat > assets/profile-views.svg <<EOF
-          <svg width="260" height="64"
-               viewBox="0 0 260 64"
-               xmlns="http://www.w3.org/2000/svg">
+<svg width="260" height="64"
+     viewBox="0 0 260 64"
+     xmlns="http://www.w3.org/2000/svg">
 
-            <defs>
-              <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#0F172A"/>
-                <stop offset="100%" stop-color="#1E3A8A"/>
-              </linearGradient>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#1E3A8A"/>
+    </linearGradient>
 
-              <filter id="glow">
-                <feGaussianBlur stdDeviation="2.5" result="blur"/>
-                <feMerge>
-                  <feMergeNode in="blur"/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
 
-              <clipPath id="clip">
-                <rect width="260" height="64" rx="16"/>
-              </clipPath>
-            </defs>
+    <clipPath id="clip">
+      <rect width="260" height="64" rx="16"/>
+    </clipPath>
+  </defs>
 
-            <!-- Fondo -->
-            <rect
-              width="260"
-              height="64"
-              rx="16"
-              fill="url(#bg)"
-            />
+  <rect
+    width="260"
+    height="64"
+    rx="16"
+    fill="url(#bg)"
+  />
 
-            <!-- Borde -->
-            <rect
-              x="1"
-              y="1"
-              width="258"
-              height="62"
-              rx="15"
-              fill="none"
-              stroke="#2563EB"
-              stroke-width="1"
-            />
+  <rect
+    x="1"
+    y="1"
+    width="258"
+    height="62"
+    rx="15"
+    fill="none"
+    stroke="#2563EB"
+    stroke-width="1"
+  />
 
-            <!-- Ojo -->
-            <g transform="translate(16 18)" filter="url(#glow)">
+  <!-- Ojo -->
+  <g transform="translate(16 18)" filter="url(#glow)">
 
-              <path
-                d="M2 14
-                   C6 7 11 4 16 4
-                   C21 4 26 7 30 14
-                   C26 21 21 24 16 24
-                   C11 24 6 21 2 14Z"
-                fill="none"
-                stroke="#FFFFFF"
-                stroke-width="2"
-              />
+    <path
+      d="M2 14
+         C6 7 11 4 16 4
+         C21 4 26 7 30 14
+         C26 21 21 24 16 24
+         C11 24 6 21 2 14Z"
+      fill="none"
+      stroke="#FFFFFF"
+      stroke-width="2"
+    />
 
-              <circle
-                cx="16"
-                cy="14"
-                r="4"
-                fill="none"
-                stroke="#60A5FA"
-                stroke-width="2"
-              >
-                <animate
-                  attributeName="r"
-                  values="3;6;3"
-                  dur="1.8s"
-                  repeatCount="indefinite"
-                />
+    <circle
+      cx="16"
+      cy="14"
+      r="4"
+      fill="none"
+      stroke="#60A5FA"
+      stroke-width="2"
+    >
+      <animate
+        attributeName="r"
+        values="3;6;3"
+        dur="1.8s"
+        repeatCount="indefinite"
+      />
 
-                <animate
-                  attributeName="opacity"
-                  values="1;0.4;1"
-                  dur="1.8s"
-                  repeatCount="indefinite"
-                />
-              </circle>
+      <animate
+        attributeName="opacity"
+        values="1;0.4;1"
+        dur="1.8s"
+        repeatCount="indefinite"
+      />
+    </circle>
 
-            </g>
+  </g>
 
-            <!-- Texto -->
-            <text
-              x="58"
-              y="24"
-              fill="#94A3B8"
-              font-family="Arial, Helvetica, sans-serif"
-              font-size="10"
-              font-weight="600"
-              letter-spacing="1.5"
-            >
-              PROFILE VIEWS
-            </text>
+  <!-- Texto -->
+  <text
+    x="58"
+    y="24"
+    fill="#94A3B8"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="10"
+    font-weight="600"
+    letter-spacing="1.5"
+  >
+    PROFILE VIEWS
+  </text>
 
-            <!-- Número REAL -->
-            <text
-              x="58"
-              y="47"
-              fill="#FFFFFF"
-              font-family="Arial, Helvetica, sans-serif"
-              font-size="20"
-              font-weight="700"
-            >
-              ${VIEWS}
-            </text>
+  <!-- Número -->
+  <text
+    x="58"
+    y="47"
+    fill="#FFFFFF"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="20"
+    font-weight="700"
+  >
+    $VIEWS
+  </text>
 
-            <!-- Estado -->
-            <circle
-              cx="238"
-              cy="20"
-              r="4"
-              fill="#22C55E"
-            >
-              <animate
-                attributeName="opacity"
-                values="1;0.3;1"
-                dur="1.5s"
-                repeatCount="indefinite"
-              />
-            </circle>
+  <!-- Estado -->
+  <circle
+    cx="238"
+    cy="20"
+    r="4"
+    fill="#22C55E"
+  >
+    <animate
+      attributeName="opacity"
+      values="1;0.3;1"
+      dur="1.5s"
+      repeatCount="indefinite"
+    />
+  </circle>
 
-            <!-- Brillo -->
-            <g clip-path="url(#clip)">
-              <rect
-                x="-70"
-                y="0"
-                width="40"
-                height="64"
-                fill="#FFFFFF"
-                opacity="0.08"
-                transform="skewX(-20)"
-              >
-                <animate
-                  attributeName="x"
-                  from="-70"
-                  to="300"
-                  dur="3.5s"
-                  repeatCount="indefinite"
-                />
-              </rect>
-            </g>
+  <!-- Brillo -->
+  <g clip-path="url(#clip)">
+    <rect
+      x="-70"
+      y="0"
+      width="40"
+      height="64"
+      fill="#FFFFFF"
+      opacity="0.08"
+      transform="skewX(-20)"
+    >
+      <animate
+        attributeName="x"
+        from="-70"
+        to="300"
+        dur="3.5s"
+        repeatCount="indefinite"
+      />
+    </rect>
+  </g>
 
-          </svg>
-          EOF
+</svg>
+EOF
+
+      - name: Comprobar SVG
+        run: |
+          echo "Contenido generado:"
+          grep "PROFILE VIEWS" assets/profile-views.svg
+          grep -A2 "font-size=\"20\"" assets/profile-views.svg
 
       - name: Guardar cambios
         run: |
@@ -196,7 +216,9 @@ jobs:
 
           git add assets/profile-views.svg
 
-          git diff --cached --quiet || \
+          if git diff --cached --quiet; then
+            echo "No hay cambios."
+          else
             git commit -m "chore: actualizar visitas del perfil"
-
-          git push
+            git push
+          fi
