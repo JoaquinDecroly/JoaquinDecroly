@@ -1,0 +1,112 @@
+name: Actualizar visitas del perfil
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generar SVG
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p assets
+
+          VIEWS=$(curl -s \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            https://api.github.com/repos/JoaquinDecroly/JoaquinDecroly/traffic/views \
+            | jq '.count')
+
+          cat > assets/profile-views.svg <<EOF
+          <svg width="230" height="52" viewBox="0 0 230 52"
+               xmlns="http://www.w3.org/2000/svg">
+
+            <defs>
+              <linearGradient id="bg" x1="0" x2="1">
+                <stop offset="0%" stop-color="#0F172A"/>
+                <stop offset="100%" stop-color="#2563EB"/>
+              </linearGradient>
+
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="2" result="blur"/>
+                <feMerge>
+                  <feMergeNode in="blur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+
+            <rect x="1" y="1" width="228" height="50"
+                  rx="14"
+                  fill="url(#bg)"
+                  stroke="#3B82F6"/>
+
+            <!-- Ojo -->
+            <g transform="translate(14 14)" filter="url(#glow)">
+              <path d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12Z"
+                    fill="none"
+                    stroke="white"
+                    stroke-width="2"/>
+
+              <circle cx="12" cy="12" r="4"
+                      fill="none"
+                      stroke="white"
+                      stroke-width="2">
+                <animate
+                  attributeName="r"
+                  values="3;5;3"
+                  dur="1.5s"
+                  repeatCount="indefinite"/>
+              </circle>
+            </g>
+
+            <text x="50" y="22"
+                  fill="#CBD5E1"
+                  font-family="Arial"
+                  font-size="10"
+                  font-weight="600">
+              VISITAS DEL PERFIL
+            </text>
+
+            <text x="50" y="40"
+                  fill="white"
+                  font-family="Arial"
+                  font-size="15"
+                  font-weight="bold">
+              $VIEWS
+            </text>
+
+            <!-- Brillo -->
+            <rect x="-60" y="1"
+                  width="45"
+                  height="50"
+                  fill="white"
+                  opacity="0.08"
+                  transform="skewX(-20)">
+              <animate
+                attributeName="x"
+                from="-60"
+                to="250"
+                dur="3s"
+                repeatCount="indefinite"/>
+            </rect>
+
+          </svg>
+          EOF
+
+      - name: Guardar SVG
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/profile-views.svg
+          git commit -m "Actualizar visitas del perfil" || exit 0
+          git push
