@@ -10,7 +10,9 @@
 
 <br>
 
-<img src="https://komarev.com/ghpvc/?username=JoaquinDecroly&style=for-the-badge&color=2563EB&label=VISITAS" alt="Profile views"/>
+<p align="center">
+  <img src="./assets/visitas.svg" alt="Visitas al repositorio">
+</p>
 
 <br><br>
 
