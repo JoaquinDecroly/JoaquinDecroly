@@ -22,18 +22,12 @@ jobs:
         run: |
           echo "Consultando contador..."
 
-          RESPONSE=$(curl -L \
-            --silent \
-            --show-error \
-            --fail \
+          RESPONSE=$(curl -L --silent --show-error --fail \
             "https://komarev.com/ghpvc/?username=JoaquinDecroly&style=flat")
 
-          echo "$RESPONSE" > /tmp/komarev.svg
+          echo "Respuesta recibida:"
+          echo "$RESPONSE"
 
-          echo "Respuesta:"
-          cat /tmp/komarev.svg
-
-          # Buscar cualquier número dentro del SVG
           VIEWS=$(echo "$RESPONSE" | grep -oE '[0-9]+' | tail -1)
 
           if [ -z "$VIEWS" ]; then
@@ -42,26 +36,19 @@ jobs:
           fi
 
           echo "Visitas encontradas: $VIEWS"
-
           echo "VIEWS=$VIEWS" >> "$GITHUB_OUTPUT"
 
-      - name: Actualizar SVG
+      - name: Generar SVG personalizado
         env:
           VIEWS: ${{ steps.views.outputs.VIEWS }}
+        shell: bash
         run: |
-          echo "Actualizando SVG con: $VIEWS"
-
-          if [ -z "$VIEWS" ]; then
-            echo "ERROR: VIEWS está vacío."
-            exit 1
-          fi
+          echo "Generando SVG con $VIEWS visitas..."
 
           mkdir -p assets
 
           cat > assets/profile-views.svg <<EOF
-<svg width="260" height="64"
-     viewBox="0 0 260 64"
-     xmlns="http://www.w3.org/2000/svg">
+<svg width="260" height="64" viewBox="0 0 260 64" xmlns="http://www.w3.org/2000/svg">
 
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -102,7 +89,6 @@ jobs:
 
   <!-- Ojo -->
   <g transform="translate(16 18)" filter="url(#glow)">
-
     <path
       d="M2 14
          C6 7 11 4 16 4
@@ -136,7 +122,6 @@ jobs:
         repeatCount="indefinite"
       />
     </circle>
-
   </g>
 
   <!-- Texto -->
@@ -148,9 +133,7 @@ jobs:
     font-size="10"
     font-weight="600"
     letter-spacing="1.5"
-  >
-    PROFILE VIEWS
-  </text>
+  >PROFILE VIEWS</text>
 
   <!-- Número -->
   <text
@@ -160,9 +143,7 @@ jobs:
     font-family="Arial, Helvetica, sans-serif"
     font-size="20"
     font-weight="700"
-  >
-    $VIEWS
-  </text>
+  >$VIEWS</text>
 
   <!-- Estado -->
   <circle
@@ -204,12 +185,14 @@ jobs:
 EOF
 
       - name: Comprobar SVG
+        shell: bash
         run: |
-          echo "Contenido generado:"
+          echo "SVG generado correctamente:"
           grep "PROFILE VIEWS" assets/profile-views.svg
-          grep -A2 "font-size=\"20\"" assets/profile-views.svg
+          grep -A2 'font-size="20"' assets/profile-views.svg
 
       - name: Guardar cambios
+        shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
