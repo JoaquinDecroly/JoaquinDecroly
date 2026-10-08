@@ -11,10 +11,7 @@
 <br>
 
 <p align="center">
-  <img
-    src="https://komarev.com/ghpvc/?username=JoaquinDecroly&style=for-the-badge&color=2563EB&label=PROFILE%20VIEWS"
-    alt="Profile views"
-  />
+  <img src="./assets/profile-views.svg" alt="Visitas al repositorio">
 </p>
 
 <br><br>
