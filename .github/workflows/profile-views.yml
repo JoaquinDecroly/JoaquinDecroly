@@ -1,4 +1,4 @@
-name: Actualizar visitas del perfil
+name: Actualizar contador de visitas
 
 on:
   schedule:
@@ -9,104 +9,194 @@ permissions:
   contents: write
 
 jobs:
-  update:
+  update-profile-views:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
 
-      - name: Generar SVG
+      - name: Obtener visitas del perfil
+        id: views
+        run: |
+          RESPONSE=$(curl -L --fail --silent --show-error \
+            "https://komarev.com/ghpvc/?username=JoaquinDecroly&label=PROFILE+VIEWS&style=for-the-badge")
+
+          echo "$RESPONSE" > /tmp/komarev.svg
+
+          echo "Respuesta recibida:"
+          cat /tmp/komarev.svg
+
+          VIEWS=$(grep -oE '[0-9]+</text>' /tmp/komarev.svg | head -1 | grep -oE '[0-9]+')
+
+          if [ -z "$VIEWS" ]; then
+            echo "No se pudo obtener el número de visitas."
+            exit 1
+          fi
+
+          echo "VIEWS=$VIEWS" >> "$GITHUB_OUTPUT"
+
+      - name: Generar SVG personalizado
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VIEWS: ${{ steps.views.outputs.VIEWS }}
         run: |
           mkdir -p assets
 
-          VIEWS=$(curl -s \
-            -H "Authorization: Bearer $GITHUB_TOKEN" \
-            https://api.github.com/repos/JoaquinDecroly/JoaquinDecroly/traffic/views \
-            | jq '.count')
-
           cat > assets/profile-views.svg <<EOF
-          <svg width="230" height="52" viewBox="0 0 230 52"
+          <svg width="260" height="64"
+               viewBox="0 0 260 64"
                xmlns="http://www.w3.org/2000/svg">
 
             <defs>
-              <linearGradient id="bg" x1="0" x2="1">
+              <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="#0F172A"/>
-                <stop offset="100%" stop-color="#2563EB"/>
+                <stop offset="100%" stop-color="#1E3A8A"/>
               </linearGradient>
 
               <filter id="glow">
-                <feGaussianBlur stdDeviation="2" result="blur"/>
+                <feGaussianBlur stdDeviation="2.5" result="blur"/>
                 <feMerge>
                   <feMergeNode in="blur"/>
                   <feMergeNode in="SourceGraphic"/>
                 </feMerge>
               </filter>
+
+              <clipPath id="clip">
+                <rect width="260" height="64" rx="16"/>
+              </clipPath>
             </defs>
 
-            <rect x="1" y="1" width="228" height="50"
-                  rx="14"
-                  fill="url(#bg)"
-                  stroke="#3B82F6"/>
+            <!-- Fondo -->
+            <rect
+              width="260"
+              height="64"
+              rx="16"
+              fill="url(#bg)"
+            />
+
+            <!-- Borde -->
+            <rect
+              x="1"
+              y="1"
+              width="258"
+              height="62"
+              rx="15"
+              fill="none"
+              stroke="#2563EB"
+              stroke-width="1"
+            />
 
             <!-- Ojo -->
-            <g transform="translate(14 14)" filter="url(#glow)">
-              <path d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12Z"
-                    fill="none"
-                    stroke="white"
-                    stroke-width="2"/>
+            <g transform="translate(16 18)" filter="url(#glow)">
 
-              <circle cx="12" cy="12" r="4"
-                      fill="none"
-                      stroke="white"
-                      stroke-width="2">
+              <path
+                d="M2 14
+                   C6 7 11 4 16 4
+                   C21 4 26 7 30 14
+                   C26 21 21 24 16 24
+                   C11 24 6 21 2 14Z"
+                fill="none"
+                stroke="#FFFFFF"
+                stroke-width="2"
+              />
+
+              <circle
+                cx="16"
+                cy="14"
+                r="4"
+                fill="none"
+                stroke="#60A5FA"
+                stroke-width="2"
+              >
                 <animate
                   attributeName="r"
-                  values="3;5;3"
-                  dur="1.5s"
-                  repeatCount="indefinite"/>
+                  values="3;6;3"
+                  dur="1.8s"
+                  repeatCount="indefinite"
+                />
+
+                <animate
+                  attributeName="opacity"
+                  values="1;0.4;1"
+                  dur="1.8s"
+                  repeatCount="indefinite"
+                />
               </circle>
+
             </g>
 
-            <text x="50" y="22"
-                  fill="#CBD5E1"
-                  font-family="Arial"
-                  font-size="10"
-                  font-weight="600">
-              VISITAS DEL PERFIL
+            <!-- Texto -->
+            <text
+              x="58"
+              y="24"
+              fill="#94A3B8"
+              font-family="Arial, Helvetica, sans-serif"
+              font-size="10"
+              font-weight="600"
+              letter-spacing="1.5"
+            >
+              PROFILE VIEWS
             </text>
 
-            <text x="50" y="40"
-                  fill="white"
-                  font-family="Arial"
-                  font-size="15"
-                  font-weight="bold">
-              $VIEWS
+            <!-- Número REAL -->
+            <text
+              x="58"
+              y="47"
+              fill="#FFFFFF"
+              font-family="Arial, Helvetica, sans-serif"
+              font-size="20"
+              font-weight="700"
+            >
+              ${VIEWS}
             </text>
+
+            <!-- Estado -->
+            <circle
+              cx="238"
+              cy="20"
+              r="4"
+              fill="#22C55E"
+            >
+              <animate
+                attributeName="opacity"
+                values="1;0.3;1"
+                dur="1.5s"
+                repeatCount="indefinite"
+              />
+            </circle>
 
             <!-- Brillo -->
-            <rect x="-60" y="1"
-                  width="45"
-                  height="50"
-                  fill="white"
-                  opacity="0.08"
-                  transform="skewX(-20)">
-              <animate
-                attributeName="x"
-                from="-60"
-                to="250"
-                dur="3s"
-                repeatCount="indefinite"/>
-            </rect>
+            <g clip-path="url(#clip)">
+              <rect
+                x="-70"
+                y="0"
+                width="40"
+                height="64"
+                fill="#FFFFFF"
+                opacity="0.08"
+                transform="skewX(-20)"
+              >
+                <animate
+                  attributeName="x"
+                  from="-70"
+                  to="300"
+                  dur="3.5s"
+                  repeatCount="indefinite"
+                />
+              </rect>
+            </g>
 
           </svg>
           EOF
 
-      - name: Guardar SVG
+      - name: Guardar cambios
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
           git add assets/profile-views.svg
-          git commit -m "Actualizar visitas del perfil" || exit 0
+
+          git diff --cached --quiet || \
+            git commit -m "chore: actualizar visitas del perfil"
+
           git push
