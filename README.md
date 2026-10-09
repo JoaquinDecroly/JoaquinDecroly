@@ -10,16 +10,27 @@
 
 <br>
 
+
 <p align="center">
-  <img src="./assets/profile-views.svg" alt="Visitas al repositorio">
+  <img
+    src="./assets/profile-views.svg"
+    alt="Visitas al perfil"
+  >
+  <img
+    src="https://komarev.com/ghpvc/?username=JoaquinDecroly&style=pixel"
+    width="1"
+    height="1"
+    alt=""
+  >
 </p>
 
-<br><br>
+
+
 
 <a href="https://github.com/JoaquinDecroly">
 <img src="https://img.shields.io/badge/GitHub-JoaquinDecroly-020617?style=for-the-badge&logo=github&logoColor=white"/>
 </a>
-
+<br><br>
  
 
 <a href="https://github.com/JoaquinDecroly?tab=repositories">
