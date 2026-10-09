@@ -1,4 +1,4 @@
-name: Actualizar contador de visitas
+name: Actualizar visitas del perfil
 
 on:
   schedule:
@@ -16,48 +16,84 @@ jobs:
       - name: Descargar repositorio
         uses: actions/checkout@v4
 
-      - name: Obtener visitas del perfil
+      - name: Obtener visitas de Komarev
         id: views
         shell: bash
         run: |
-          RESPONSE=$(curl -L --silent --show-error --fail \
+          RESPONSE=$(curl -fsSL \
             "https://komarev.com/ghpvc/?username=JoaquinDecroly&style=flat")
 
-          echo "$RESPONSE"
+          VIEWS=$(python -c '
+          import re
+          import sys
+          from html import unescape
 
-          VIEWS=$(echo "$RESPONSE" | grep -oE '[0-9]+' | tail -1)
+          svg = sys.stdin.read()
+          values = re.findall(
+              r"<text\b[^>]*>(.*?)</text>",
+              svg,
+              re.DOTALL
+          )
+
+          numbers = [
+              unescape(re.sub(r"<[^>]+>", "", value)).strip()
+              for value in values
+          ]
+
+          numbers = [n for n in numbers if re.fullmatch(r"[0-9,]+", n)]
+
+          if not numbers:
+              print("No se pudo extraer el contador de Komarev", file=sys.stderr)
+              sys.exit(1)
+
+          print(numbers[-1].replace(",", ""))
+          ' <<< "$RESPONSE")
 
           if ! [[ "$VIEWS" =~ ^[0-9]+$ ]]; then
-            echo "ERROR: contador inválido: $VIEWS"
+            echo "Contador inválido: $VIEWS"
             exit 1
           fi
 
-          echo "Visitas: $VIEWS"
           echo "VIEWS=$VIEWS" >> "$GITHUB_OUTPUT"
+          echo "Visitas obtenidas: $VIEWS"
 
-      - name: Actualizar solamente el número del SVG
+      - name: Actualizar el número del SVG
         env:
           VIEWS: ${{ steps.views.outputs.VIEWS }}
-        shell: bash
         run: |
-          FILE="assets/profile-views.svg"
+          python - <<'PY'
+          import os
+          import re
+          from pathlib import Path
 
-          if [ ! -f "$FILE" ]; then
-            echo "ERROR: No existe $FILE"
-            exit 1
-          fi
+          file = Path("assets/profile-views.svg")
+          svg = file.read_text(encoding="utf-8")
+          views = os.environ["VIEWS"]
 
-          echo "Número nuevo: $VIEWS"
+          pattern = (
+              r'(<text\b(?=[^>]*\bfont-size="20")[^>]*>)'
+              r'(\s*)[0-9]+(\s*</text>)'
+          )
 
-          sed -i -E \
-            "s|(font-size=\"20\"[^>]*>[[:space:]]*)[0-9]+([[:space:]]*</text>)|\1$VIEWS\2|" \
-            "$FILE"
+          updated, count = re.subn(
+              pattern,
+              lambda m: m.group(1) + m.group(2) + views + m.group(3),
+              svg,
+              count=1,
+              flags=re.DOTALL
+          )
 
-          echo "Resultado:"
-          grep -A1 'font-size="20"' "$FILE"
+          if count != 1:
+              raise SystemExit(
+                  "No se encontró el número dentro del <text> "
+                  "con font-size=\"20\". No se ha modificado el SVG."
+              )
+
+          file.write_text(updated, encoding="utf-8")
+          print(f"SVG actualizado: {views} visitas")
+          PY
 
       - name: Guardar cambios
-        shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -65,7 +101,7 @@ jobs:
           git add assets/profile-views.svg
 
           if git diff --cached --quiet; then
-            echo "El contador no ha cambiado."
+            echo "El número no ha cambiado."
           else
             git commit -m "chore: actualizar visitas del perfil"
             git push
