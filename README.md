@@ -1,45 +1,37 @@
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&height=260&text=JOAQU%C3%8DN%20VALENT%C3%8DN%20OTTONELLO&fontAlign=50&fontAlignY=38&fontSize=42&fontColor=FFFFFF&desc=2%C2%BA%20DAW%20%7C%20WEB%20DEVELOPER&descAlign=50&descAlignY=60&descSize=21&animation=fadeIn&color=0:020617,45:0F172A,75:1E3A8A,100:2563EB" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&height=260&text=JOAQU%C3%8DN%20VALENT%C3%8DN%20OTTONELLO&fontAlign=50&fontAlignY=38&fontSize=42&fontColor=FFFFFF&desc=2%C2%BA%20DAW%20%7C%20Full%20Stack%20Developer&descAlignY=50&descAlign=50&animation=fadeIn&color=0:2563EB,50:1E3A8A,100:020617" width="100%"/>
+
+</div>
 
 <br>
+
+<div align="center">
 
 <a href="https://github.com/JoaquinDecroly">
-<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=700&size=21&duration=2600&pause=700&color=60A5FA&center=true&vCenter=true&width=850&height=65&lines=%3E+Hola%2C+soy+Joaqu%C3%ADn+%F0%9F%91%8B;%3E+Estudiante+de+Desarrollo+de+Aplicaciones+Web;%3E+Dise%C3%B1ando+%E2%86%92+Programando+%E2%86%92+Desplegando;%3E+Construyendo+proyectos+que+siguen+creciendo+%F0%9F%9A%80" alt="Typing animation"/>
+<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=700&size=24&duration=2600&pause=700&color=60A5FA&center=true&vCenter=true&width=850&height=70&lines=%3E+Bienvenido+a+mi+perfil;%3E+Soy+Desarrollador+Web;%3E+Aprendiendo+cada+d%C3%ADa+%F0%9F%9A%80" alt="Typing animation"/>
 </a>
 
-<br>
+</div>
 
+<br>
 
 <p align="center">
-  <img
-    src="./assets/profile-views.svg"
-    alt="Visitas al perfil"
-  >
-  <img
-    src="https://komarev.com/ghpvc/?username=JoaquinDecroly&style=pixel"
-    width="1"
-    height="1"
-    alt=""
-  >
+  <img src="https://komarev.com/ghpvc/?username=JoaquinDecroly&style=flat-square&color=2563EB" alt="Visitas al perfil"/>
 </p>
 
-
-
+<div align="center">
 
 <a href="https://github.com/JoaquinDecroly">
-<img src="https://img.shields.io/badge/GitHub-JoaquinDecroly-020617?style=for-the-badge&logo=github&logoColor=white"/>
+<img src="https://img.shields.io/badge/GitHub-JoaquinDecroly-020617?style=for-the-badge&logo=github&logoColor=white&labelColor=1e3a8a" alt="GitHub"/>
 </a>
 <br><br>
- 
 
 <a href="https://github.com/JoaquinDecroly?tab=repositories">
-<img src="https://img.shields.io/badge/REPOSITORIOS-1E3A8A?style=for-the-badge&logo=github&logoColor=white"/>
+<img src="https://img.shields.io/badge/REPOSITORIOS-2563EB?style=for-the-badge&logo=github&logoColor=white" alt="Repositorios"/>
 </a>
 
- 
-
-<img src="https://img.shields.io/badge/2%C2%BA%20DAW-2563EB?style=for-the-badge&logo=code&logoColor=white"/>
+<img src="https://img.shields.io/badge/2%C2%BA%20DAW-1E3A8A?style=for-the-badge&logo=code&logoColor=white" alt="2º DAW"/>
 
 </div>
 
@@ -47,16 +39,18 @@
 
 <div align="center">
 
-<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&size=17&duration=3500&pause=1200&color=94A3B8&center=true&vCenter=true&width=700&height=40&lines=Aprendiendo+desarrollo+web+un+proyecto+a+la+vez.;Del+dise%C3%B1o+al+c%C3%B3digo.+Del+c%C3%B3digo+al+servidor." alt="About animation"/>
+<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&size=18&duration=3500&pause=1200&color=60A5FA&center=true&vCenter=true&width=700&height=50&lines=Aprendiendo+desarrollo+web+cada+d%C3%ADa;Construyendo+soluciones+innovadoras;Desde+ideas+hasta+producci%C3%B3n" alt="Subtítulo dinámico"/>
 
 </div>
+
+---
+
+## 👋 Sobre mí
 
 <table>
 <tr>
 
-<td width="58%" valign="top">
-
-# 👋 Sobre mí
+<td width="60%" valign="top">
 
 Soy **Joaquín**, estudiante de **2º de Desarrollo de Aplicaciones Web (DAW)**.
 
@@ -64,26 +58,28 @@ Me interesa entender cómo funciona una aplicación de principio a fin: desde la
 
 Actualmente estoy construyendo proyectos mientras sigo aprendiendo nuevas tecnologías y mejorando mi forma de programar.
 
+**Mi objetivo**: crear aplicaciones que combinen funcionalidad, diseño limpio y excelente experiencia de usuario.
+
 </td>
 
-<td width="42%" align="center" valign="middle">
+<td width="40%" align="center" valign="middle">
 
 ```text
-╭─────────────────────╮
-│                     │
-│   💡 IDEA           │
-│      ↓              │
-│   🎨 DISEÑO         │
-│      ↓              │
-│   💻 CÓDIGO         │
-│      ↓              │
-│   ⚙️ BACKEND        │
-│      ↓              │
-│   🗄️ DATOS          │
-│      ↓              │
-│   🚀 DEPLOY         │
-│                     │
-╰─────────────────────╯
+╔═════════════════════╗
+║                     ║
+║   💡 IDEA           ║
+║       ↓             ║
+║   🎨 DISEÑO         ║
+║       ↓             ║
+║   💻 CÓDIGO         ║
+║       ↓             ║
+║   ⚙️  BACKEND        ║
+║       ↓             ║
+║   🗄️  DATOS          ║
+║       ↓             ║
+║   🚀 DEPLOY         ║
+║                     ║
+╚═════════════════════╝
 ```
 
 </td>
@@ -101,10 +97,11 @@ Actualmente estoy construyendo proyectos mientras sigo aprendiendo nuevas tecnol
 
 ### 🎨 DISEÑO
 
-Interfaces
-UI / UX
-Responsive
-Accesibilidad
+**Interfaces intuitivas**
+- UI/UX Modern
+- Responsive Design
+- Accesibilidad
+- Animaciones suaves
 
 </td>
 
@@ -112,10 +109,11 @@ Accesibilidad
 
 ### 🌐 FRONTEND
 
-HTML
-CSS
-JavaScript
-DOM
+**Experiencias interactivas**
+- HTML5
+- CSS3
+- JavaScript
+- DOM & Events
 
 </td>
 
@@ -123,10 +121,11 @@ DOM
 
 ### ⚙️ BACKEND
 
-Java
-PHP
-Spring
-REST
+**Lógica robusta**
+- Java
+- PHP
+- Spring Boot
+- REST APIs
 
 </td>
 
@@ -134,10 +133,11 @@ REST
 
 ### 🚀 TOOLS
 
-Git
-GitHub
-Docker
-IDEs
+**Stack Moderno**
+- Git & GitHub
+- Docker
+- Maven
+- IDEs
 
 </td>
 
@@ -146,119 +146,137 @@ IDEs
 
 ---
 
+## 🧠 Stack Tecnológico
+
 <div align="center">
 
-## 🧠 Stack tecnológico
+<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&size=16&duration=3000&pause=1000&color=60A5FA&center=true&vCenter=true&width=700&height=40&lines=Tecnolog%C3%ADas+que+domino+y+utilizo+%F0%9F%92%BB" alt="Stack"/>
 
-<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&size=15&duration=3000&pause=1000&color=64748B&center=true&vCenter=true&width=700&height=30&lines=Detectado+autom%C3%A1ticamente+desde+mis+repositorios;El+stack+crece+con+cada+proyecto" alt="Dynamic stack"/>
+</div>
 
 <!-- AUTO-STACK:START -->
 <p align="center">
-<img src="https://skillicons.dev/icons?i=js,html,css,php&perline=8" alt="Tecnologías detectadas"/>
+<img src="https://skillicons.dev/icons?i=js,html,css,php,java,spring,git,github,docker,maven&perline=10" alt="Tech Stack"/>
 </p>
 <!-- AUTO-STACK:END -->
 
-</div>
-
 ---
-
-<div align="center">
 
 ## 📊 GitHub Analytics
 
-<img src="https://github-readme-stats.vercel.app/api?username=JoaquinDecroly&show_icons=true&hide_border=true&bg_color=00000000&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA&rank_icon=github&include_all_commits=true" height="180"/>
+<div align="center">
 
-<img src="https://github-readme-stats.vercel.app/api/top-langs/?username=JoaquinDecroly&layout=compact&hide_border=true&bg_color=00000000&title_color=60A5FA&text_color=CBD5E1&langs_count=8" height="180"/>
+<img src="https://github-readme-stats.vercel.app/api?username=JoaquinDecroly&show_icons=true&hide_border=true&bg_color=00000000&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA&rank_icon=github&card_width=500" alt="GitHub Stats"/>
 
-<br><br>
+<img src="https://github-readme-stats.vercel.app/api/top-langs/?username=JoaquinDecroly&layout=compact&hide_border=true&bg_color=00000000&title_color=60A5FA&text_color=CBD5E1&card_width=500" alt="Lenguajes más usados"/>
 
-<img src="https://github-readme-streak-stats.herokuapp.com/?user=JoaquinDecroly&theme=transparent&hide_border=true&ring=2563EB&fire=60A5FA&currStreakLabel=60A5FA&sideLabels=CBD5E1&dates=64748B" width="520"/>
+</div>
+
+<div align="center">
+
+<img src="https://github-readme-streak-stats.herokuapp.com/?user=JoaquinDecroly&theme=transparent&hide_border=true&ring=2563EB&fire=60A5FA&currStreakLabel=60A5FA&sideLabels=CBD5E1&dates=64748B" alt="GitHub Streak"/>
 
 </div>
 
 ---
-
-<div align="center">
 
 ## 📈 Actividad en GitHub
 
-<img src="https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=JoaquinDecroly&theme=github_dark" width="95%" alt="GitHub activity"/>
+<div align="center">
+
+<img src="https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=JoaquinDecroly&theme=github_dark" width="95%" alt="GitHub Activity"/>
 
 </div>
 
 ---
 
+## 🚀 Proyectos Destacados
+
 <div align="center">
 
-## 🚀 Proyectos
-
-### Proyectos destacados detectados automáticamente desde mis repositorios.
+> Proyectos detectados automáticamente desde mis repositorios
 
 <br>
 
 <!-- AUTO-PROJECTS:START -->
+<table>
+<tr>
+
+<td width="50%">
+
 <a href="https://github.com/JoaquinDecroly/Daw2Decroly2027">
 <img src="https://github-readme-stats.vercel.app/api/pin/?username=JoaquinDecroly&repo=Daw2Decroly2027&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA"/>
 </a>
 
+</td>
+
+<td width="50%">
+
 <a href="https://github.com/JoaquinDecroly/JoaquinDecroly">
 <img src="https://github-readme-stats.vercel.app/api/pin/?username=JoaquinDecroly&repo=JoaquinDecroly&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA"/>
 </a>
+
+</td>
+
+</tr>
+</table>
 <!-- AUTO-PROJECTS:END -->
 
-<br><br>
+<br>
 
 <a href="https://github.com/JoaquinDecroly?tab=repositories">
-<img src="https://img.shields.io/badge/EXPLORAR%20TODOS%20LOS%20PROYECTOS-2563EB?style=for-the-badge&logo=github&logoColor=white"/>
+<img src="https://img.shields.io/badge/VER%20TODOS%20LOS%20PROYECTOS-2563EB?style=for-the-badge&logo=github&logoColor=white" alt="Todos los proyectos"/>
 </a>
 
 </div>
 
 ---
 
+## 🐍 Contribuciones
+
 <div align="center">
 
-## 🐍 Actividad de contribución
-
-<img src="https://raw.githubusercontent.com/Platane/snk/output/github-contribution-grid-snake-dark.svg" width="95%" alt="GitHub contribution snake"/>
+<img src="https://raw.githubusercontent.com/Platane/snk/output/github-contribution-grid-snake-dark.svg" width="100%" alt="Contribution Snake"/>
 
 </div>
 
 ---
 
+## 🛠️ Entorno de Desarrollo
+
 <div align="center">
 
-## 🛠️ Entorno de desarrollo
+<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&size=16&duration=3000&pause=1000&color=60A5FA&center=true&vCenter=true&width=700&height=40&lines=Herramientas+y+tecnolog%C3%ADas+de+desarrollo+%F0%9F%9B%A0%EF%B8%8F" alt="Dev Tools"/>
 
-<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&size=15&duration=3000&pause=1000&color=64748B&center=true&vCenter=true&width=700&height=30&lines=Herramientas+detectadas+autom%C3%A1ticamente;Basado+en+la+estructura+de+mis+proyectos" alt="Dynamic environment"/>
+</div>
 
 <!-- AUTO-ENV:START -->
 <p align="center">
-<img src="https://skillicons.dev/icons?i=git,github,maven,spring,bootstrap,githubactions&perline=8" alt="Entorno de desarrollo"/>
+<img src="https://skillicons.dev/icons?i=git,github,maven,spring,bootstrap,githubactions,vscode,idea,postgresql,docker&perline=10" alt="Development Environment"/>
 </p>
 <!-- AUTO-ENV:END -->
 
-</div>
-
 ---
-
-<div align="center">
 
 ## 📬 Contacto
 
-<a href="https://github.com/JoaquinDecroly">
-<img src="https://img.shields.io/badge/GitHub-JoaquinDecroly-181717?style=for-the-badge&logo=github"/>
-</a>
+<div align="center">
 
- 
+<a href="https://github.com/JoaquinDecroly">
+<img src="https://img.shields.io/badge/GitHub-JoaquinDecroly-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"/>
+</a>
 
 <a href="https://www.linkedin.com/">
-<img src="https://img.shields.io/badge/LinkedIn-Perfil-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white"/>
+<img src="https://img.shields.io/badge/LinkedIn-Perfil-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"/>
 </a>
 
-<br><br>
+</div>
 
-<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=15&duration=3500&pause=1200&color=64748B&center=true&vCenter=true&width=700&height=30&lines=%3E+Code.+Learn.+Build.+Repeat.;%3E+Siempre+hay+algo+nuevo+que+construir." alt="Footer animation"/>
+<br>
+
+<div align="center">
+
+<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=16&duration=3500&pause=1200&color=60A5FA&center=true&vCenter=true&width=700&height=40&lines=%3E+Code.+Learn.+Build.+Repeat;%3E+Gracias+por+visitar+mi+perfil+%F0%9F%98%8A" alt="Cierre"/>
 
 </div>
 
