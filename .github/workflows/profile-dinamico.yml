@@ -11,6 +11,11 @@ on:
       - ".github/workflows/profile-dinamico.yml"
       - "scripts/update-profile.mjs"
 
+# Evita ejecuciones simultáneas del mismo workflow.
+concurrency:
+  group: perfil-dinamico-${{ github.ref }}
+  cancel-in-progress: false
+
 permissions:
   contents: write
 
@@ -21,6 +26,8 @@ jobs:
     steps:
       - name: Descargar perfil
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Configurar Node.js
         uses: actions/setup-node@v4
