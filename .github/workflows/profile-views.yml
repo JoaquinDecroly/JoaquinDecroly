@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: actualizar-perfil-main
+  cancel-in-progress: false
+
 jobs:
   update-profile-views:
     runs-on: ubuntu-latest
@@ -15,6 +19,8 @@ jobs:
     steps:
       - name: Descargar repositorio
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Obtener visitas de Komarev
         id: views
@@ -85,8 +91,8 @@ jobs:
 
           if count != 1:
               raise SystemExit(
-                  "No se encontró el número dentro del <text> "
-                  "con font-size=\"20\". No se ha modificado el SVG."
+                  'No se encontró el número dentro del <text> '
+                  'con font-size="20". No se ha modificado el SVG.'
               )
 
           file.write_text(updated, encoding="utf-8")
@@ -104,5 +110,8 @@ jobs:
             echo "El número no ha cambiado."
           else
             git commit -m "chore: actualizar visitas del perfil"
-            git push
+
+            git pull --rebase origin main
+
+            git push origin main
           fi
