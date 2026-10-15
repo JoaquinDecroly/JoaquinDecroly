@@ -154,7 +154,7 @@ IDEs
 
 <!-- AUTO-STACK:START -->
 <p align="center">
-<img src="https://skillicons.dev/icons?i=html&perline=8" alt="Tecnologías detectadas"/>
+<img src="https://skillicons.dev/icons?i=html,java,css,js,php&perline=8" alt="Tecnologías detectadas"/>
 </p>
 <!-- AUTO-STACK:END -->
 
@@ -201,8 +201,16 @@ IDEs
 <img src="https://github-readme-stats.vercel.app/api/pin/?username=JoaquinDecroly&repo=Daw2Decroly2027&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA"/>
 </a>
 
-<a href="https://github.com/JoaquinDecroly/JoaquinDecroly">
-<img src="https://github-readme-stats.vercel.app/api/pin/?username=JoaquinDecroly&repo=JoaquinDecroly&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA"/>
+<a href="https://github.com/JoaquinDecroly/DWEC_26_27">
+<img src="https://github-readme-stats.vercel.app/api/pin/?username=JoaquinDecroly&repo=DWEC_26_27&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA"/>
+</a>
+
+<a href="https://github.com/JoaquinDecroly/tienda">
+<img src="https://github-readme-stats.vercel.app/api/pin/?username=JoaquinDecroly&repo=tienda&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA"/>
+</a>
+
+<a href="https://github.com/JoaquinDecroly/todotabla">
+<img src="https://github-readme-stats.vercel.app/api/pin/?username=JoaquinDecroly&repo=todotabla&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA"/>
 </a>
 <!-- AUTO-PROJECTS:END -->
 
@@ -234,7 +242,7 @@ IDEs
 
 <!-- AUTO-ENV:START -->
 <p align="center">
-<img src="https://skillicons.dev/icons?i=git,github,maven,spring,bootstrap,githubactions&perline=8" alt="Entorno de desarrollo"/>
+<img src="https://skillicons.dev/icons?i=git,github,idea,vscode,maven,java,spring,bootstrap,githubactions&perline=8" alt="Entorno de desarrollo"/>
 </p>
 <!-- AUTO-ENV:END -->
 
