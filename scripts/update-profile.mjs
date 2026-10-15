@@ -45,10 +45,7 @@ async function getAllRepos() {
   }
 
   return repos.filter(
-    (repo) =>
-      !repo.fork &&
-      !repo.archived &&
-      !repo.private
+    (repo) => !repo.archived && !repo.private
   );
 }
 
@@ -74,7 +71,28 @@ const languageIconMap = {
   Ruby: "ruby",
   Dart: "dart",
   Shell: "bash",
+  Bash: "bash",
+  PowerShell: "powershell",
   SQL: "mysql",
+  Vue: "vue",
+  Svelte: "svelte",
+  SCSS: "sass",
+  Sass: "sass",
+  Less: "less",
+  GraphQL: "graphql",
+  Lua: "lua",
+  R: "r",
+  Scala: "scala",
+  Perl: "perl",
+  Haskell: "haskell",
+  Elixir: "elixir",
+  Clojure: "clojure",
+  Dockerfile: "docker",
+  Makefile: "cmake",
+  Prisma: "prisma",
+  Astro: "astro",
+  Markdown: "markdown",
+  YAML: "yaml",
 };
 
 /* ─────────────────────────────────────────────
@@ -108,18 +126,14 @@ async function getLanguages(repo) {
   return github(`/repos/${owner}/${repo.name}/languages`);
 }
 
-/*
- * Solo mostramos un lenguaje si representa
- * al menos el 5% del código total detectado.
- *
- * Esto evita que aparezcan lenguajes residuales
- * utilizados en cantidades muy pequeñas.
- */
-
 async function buildStack(repos) {
   const languageTotals = {};
 
-  for (const repo of repos) {
+  const reposForLanguages = repos.filter(
+    (repo) => repo.name.toLowerCase() !== owner.toLowerCase()
+  );
+
+  for (const repo of reposForLanguages) {
     try {
       const languages = await getLanguages(repo);
 
@@ -127,11 +141,23 @@ async function buildStack(repos) {
         languageTotals[language] =
           (languageTotals[language] || 0) + bytes;
       }
-    } catch {
+    } catch (error) {
       console.log(
-        `No se pudieron leer los lenguajes de ${repo.name}`
+        `No se pudieron leer los lenguajes de ${repo.name}: ${error.message}`
       );
     }
+  }
+
+  console.log("\nBytes por lenguaje (antes de filtrar):");
+
+  for (const [language, bytes] of Object.entries(languageTotals).sort(
+    (a, b) => b[1] - a[1]
+  )) {
+    console.log(
+      `- ${language}: ${bytes} bytes${
+        languageIconMap[language] ? "" : " (sin icono configurado)"
+      }`
+    );
   }
 
   const totalBytes = Object.values(languageTotals).reduce(
@@ -143,7 +169,7 @@ async function buildStack(repos) {
     return `<p align="center">No hay lenguajes detectados todavía.</p>`;
   }
 
-  const MIN_PERCENTAGE = 5;
+  const MIN_PERCENTAGE = 1;
 
   const languages = Object.entries(languageTotals)
     .map(([language, bytes]) => ({
@@ -157,13 +183,13 @@ async function buildStack(repos) {
         languageIconMap[item.language]
     )
     .sort((a, b) => b.bytes - a.bytes)
-    .slice(0, 10);
+    .slice(0, 12);
 
   if (languages.length === 0) {
-    return `<p align="center">Todavía no hay suficientes lenguajes relevantes.</p>`;
+    return `<p align="center">No se encontraron lenguajes con iconos compatibles.</p>`;
   }
 
-  console.log("\nLenguajes detectados:");
+  console.log("\nLenguajes mostrados en el README:");
 
   for (const item of languages) {
     console.log(
@@ -205,10 +231,7 @@ function hasFile(tree, names) {
     return names.some((name) => {
       const target = name.toLowerCase();
 
-      return (
-        path === target ||
-        path.includes(target)
-      );
+      return path === target || path.includes(target);
     });
   });
 }
@@ -228,18 +251,14 @@ function hasExtension(tree, extension) {
 async function detectEnvironment(repos) {
   const detected = new Set();
 
-  // Herramientas base
   detected.add("Git");
   detected.add("GitHub");
 
-  // Revisamos como máximo 20 repositorios
   const reposToInspect = repos.slice(0, 20);
 
   for (const repo of reposToInspect) {
     const result = await getRepoTree(repo);
     const tree = result.tree || [];
-
-    /* IntelliJ IDEA */
 
     if (
       hasFile(tree, [".idea"]) ||
@@ -248,13 +267,9 @@ async function detectEnvironment(repos) {
       detected.add("IntelliJ IDEA");
     }
 
-    /* VS Code */
-
     if (hasFile(tree, [".vscode"])) {
       detected.add("VS Code");
     }
-
-    /* Eclipse */
 
     if (
       hasFile(tree, [".project"]) ||
@@ -264,8 +279,6 @@ async function detectEnvironment(repos) {
       detected.add("Eclipse");
     }
 
-    /* Docker */
-
     if (
       hasFile(tree, ["dockerfile"]) ||
       hasFile(tree, ["docker-compose.yml"]) ||
@@ -274,13 +287,9 @@ async function detectEnvironment(repos) {
       detected.add("Docker");
     }
 
-    /* Maven */
-
     if (hasFile(tree, ["pom.xml"])) {
       detected.add("Maven");
     }
-
-    /* Gradle */
 
     if (
       hasFile(tree, ["build.gradle"]) ||
@@ -289,8 +298,6 @@ async function detectEnvironment(repos) {
     ) {
       detected.add("Gradle");
     }
-
-    /* Node.js */
 
     if (
       hasFile(tree, ["package.json"]) ||
@@ -301,24 +308,13 @@ async function detectEnvironment(repos) {
       detected.add("Node.js");
     }
 
-    /* GitHub Actions */
-
     if (hasFile(tree, [".github/workflows"])) {
       detected.add("GitHub Actions");
     }
 
-    /* JavaFX */
-
     if (hasExtension(tree, ".fxml")) {
       detected.add("JavaFX");
     }
-
-    /*
-     * Spring
-     *
-     * Se considera Spring si encontramos
-     * archivos o configuraciones típicas.
-     */
 
     if (
       hasFile(tree, ["spring-boot"]) ||
@@ -330,12 +326,6 @@ async function detectEnvironment(repos) {
       detected.add("Spring");
     }
 
-    /*
-     * MySQL
-     *
-     * Buscamos señales típicas de MySQL.
-     */
-
     if (
       hasFile(tree, ["mysql"]) ||
       hasFile(tree, ["mysqld"]) ||
@@ -344,10 +334,6 @@ async function detectEnvironment(repos) {
     ) {
       detected.add("MySQL");
     }
-
-    /*
-     * SQLite
-     */
 
     if (
       hasFile(tree, ["sqlite"]) ||
@@ -358,20 +344,12 @@ async function detectEnvironment(repos) {
       detected.add("SQLite");
     }
 
-    /*
-     * PostgreSQL
-     */
-
     if (
       hasFile(tree, ["postgres"]) ||
       hasFile(tree, ["postgresql"])
     ) {
       detected.add("PostgreSQL");
     }
-
-    /*
-     * Bootstrap
-     */
 
     if (
       hasFile(tree, ["bootstrap"]) ||
@@ -380,11 +358,6 @@ async function detectEnvironment(repos) {
       detected.add("Bootstrap");
     }
   }
-
-  /*
-   * Orden en el que aparecerán las herramientas
-   * en el README.
-   */
 
   const ordered = [
     "Git",
@@ -405,9 +378,7 @@ async function detectEnvironment(repos) {
     "GitHub Actions",
   ];
 
-  return ordered.filter((tool) =>
-    detected.has(tool)
-  );
+  return ordered.filter((tool) => detected.has(tool));
 }
 
 /* ─────────────────────────────────────────────
@@ -436,21 +407,13 @@ Herramientas detectadas automáticamente.
 
 function calculateProjectScore(repo) {
   const daysSincePush =
-    (Date.now() -
-      new Date(repo.pushed_at).getTime()) /
+    (Date.now() - new Date(repo.pushed_at).getTime()) /
     (1000 * 60 * 60 * 24);
 
-  const recencyScore =
-    Math.max(0, 100 - daysSincePush);
-
-  const starsScore =
-    repo.stargazers_count * 10;
-
-  const forksScore =
-    repo.forks_count * 5;
-
-  const sizeScore =
-    Math.min(repo.size / 100, 20);
+  const recencyScore = Math.max(0, 100 - daysSincePush);
+  const starsScore = repo.stargazers_count * 10;
+  const forksScore = repo.forks_count * 5;
+  const sizeScore = Math.min(repo.size / 100, 20);
 
   return (
     recencyScore +
@@ -470,9 +433,8 @@ async function buildProjects(repos) {
   const sorted = [...repos]
     .filter(
       (repo) =>
-        !repo.name
-          .toLowerCase()
-          .includes("profile")
+        repo.name.toLowerCase() !== owner.toLowerCase() &&
+        !repo.name.toLowerCase().includes("profile")
     )
     .sort(
       (a, b) =>
@@ -488,9 +450,7 @@ Todavía no hay proyectos públicos disponibles.
 </p>`;
   }
 
-  return selected
-    .map(projectCard)
-    .join("\n\n");
+  return selected.map(projectCard).join("\n\n");
 }
 
 /* ─────────────────────────────────────────────
@@ -503,11 +463,8 @@ function replaceSection(
   endMarker,
   replacement
 ) {
-  const start =
-    content.indexOf(startMarker);
-
-  const end =
-    content.indexOf(endMarker);
+  const start = content.indexOf(startMarker);
+  const end = content.indexOf(endMarker);
 
   if (
     start === -1 ||
@@ -521,8 +478,7 @@ ${endMarker}`
     );
   }
 
-  const startContent =
-    start + startMarker.length;
+  const startContent = start + startMarker.length;
 
   return (
     content.slice(0, startContent) +
@@ -538,103 +494,57 @@ ${endMarker}`
    ───────────────────────────────────────────── */
 
 async function main() {
-  const fs =
-    await import("node:fs/promises");
+  const fs = await import("node:fs/promises");
 
-  console.log(
-    `Analizando GitHub de ${owner}...`
+  console.log(`Analizando GitHub de ${owner}...`);
+
+  const repos = await getAllRepos();
+
+  console.log(`Repositorios encontrados: ${repos.length}`);
+
+  console.log("Analizando lenguajes...");
+
+  const stack = await buildStack(repos);
+
+  console.log("Analizando entorno...");
+
+  const tools = await detectEnvironment(repos);
+  const environment = buildToolIcons(tools);
+
+  console.log("Seleccionando proyectos...");
+
+  const projects = await buildProjects(repos);
+
+  let readme = await fs.readFile("README.md", "utf8");
+
+  readme = replaceSection(
+    readme,
+    "<!-- AUTO-STACK:START -->",
+    "<!-- AUTO-STACK:END -->",
+    stack
   );
 
-  const repos =
-    await getAllRepos();
-
-  console.log(
-    `Repositorios encontrados: ${repos.length}`
+  readme = replaceSection(
+    readme,
+    "<!-- AUTO-ENV:START -->",
+    "<!-- AUTO-ENV:END -->",
+    environment
   );
 
-  /* Stack */
-
-  console.log(
-    "Analizando lenguajes..."
+  readme = replaceSection(
+    readme,
+    "<!-- AUTO-PROJECTS:START -->",
+    "<!-- AUTO-PROJECTS:END -->",
+    projects
   );
 
-  const stack =
-    await buildStack(repos);
+  await fs.writeFile("README.md", readme);
 
-  /* Entorno */
-
-  console.log(
-    "Analizando entorno..."
-  );
-
-  const tools =
-    await detectEnvironment(repos);
-
-  const environment =
-    buildToolIcons(tools);
-
-  /* Proyectos */
-
-  console.log(
-    "Seleccionando proyectos..."
-  );
-
-  const projects =
-    await buildProjects(repos);
-
-  /* README */
-
-  let readme =
-    await fs.readFile(
-      "README.md",
-      "utf8"
-    );
-
-  readme =
-    replaceSection(
-      readme,
-      "<!-- AUTO-STACK:START -->",
-      "<!-- AUTO-STACK:END -->",
-      stack
-    );
-
-  readme =
-    replaceSection(
-      readme,
-      "<!-- AUTO-ENV:START -->",
-      "<!-- AUTO-ENV:END -->",
-      environment
-    );
-
-  readme =
-    replaceSection(
-      readme,
-      "<!-- AUTO-PROJECTS:START -->",
-      "<!-- AUTO-PROJECTS:END -->",
-      projects
-    );
-
-  await fs.writeFile(
-    "README.md",
-    readme
-  );
-
-  console.log(
-    "\n✅ README actualizado correctamente."
-  );
-
-  console.log(
-    "🛠️ Entorno:",
-    tools.join(", ")
-  );
+  console.log("\n✅ README actualizado correctamente.");
+  console.log("🛠️ Entorno:", tools.join(", "));
 }
 
 main().catch((error) => {
-  console.error(
-    "❌ Error:",
-    error
-  );
-
+  console.error("❌ Error:", error);
   process.exit(1);
 });
-
