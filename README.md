@@ -154,7 +154,7 @@ IDEs
 
 <!-- AUTO-STACK:START -->
 <p align="center">
-<img src="https://skillicons.dev/icons?i=html,java,css,js&perline=8" alt="Tecnologías detectadas"/>
+<img src="https://skillicons.dev/icons?i=html,java&perline=8" alt="Tecnologías detectadas"/>
 </p>
 <!-- AUTO-STACK:END -->
 
