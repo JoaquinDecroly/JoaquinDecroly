@@ -44,13 +44,23 @@ async function getAllRepos() {
     }
   }
 
-  return repos.filter(
+  const filtered = repos.filter(
     (repo) => !repo.archived && !repo.private
   );
+
+  console.log("\nRepositorios públicos analizados:");
+
+  for (const repo of filtered) {
+    console.log(`- ${repo.full_name}`);
+  }
+
+  return filtered;
 }
 
 /* ─────────────────────────────────────────────
    ICONOS DE LENGUAJES
+   Los lenguajes se conservan aunque no tengan
+   un icono disponible en Skill Icons.
    ───────────────────────────────────────────── */
 
 const languageIconMap = {
@@ -96,7 +106,7 @@ const languageIconMap = {
 };
 
 /* ─────────────────────────────────────────────
-   ICONOS DE HERRAMIENTAS
+   ICONOS DEL ENTORNO
    ───────────────────────────────────────────── */
 
 const toolIconMap = {
@@ -108,7 +118,7 @@ const toolIconMap = {
   Docker: "docker",
   "GitHub Actions": "githubactions",
   MySQL: "mysql",
-  PostgreSQL: "postgresql",
+  PostgreSQL: "postgres",
   SQLite: "sqlite",
   Maven: "maven",
   Gradle: "gradle",
@@ -123,12 +133,15 @@ const toolIconMap = {
    ───────────────────────────────────────────── */
 
 async function getLanguages(repo) {
-  return github(`/repos/${owner}/${repo.name}/languages`);
+  const repoOwner = repo.owner?.login || owner;
+
+  return github(
+    `/repos/${repoOwner}/${repo.name}/languages`
+  );
 }
 
 async function buildStack(repos) {
   const languageTotals = {};
-
   const reposForLanguages = repos.filter(
     (repo) => repo.name.toLowerCase() !== owner.toLowerCase()
   );
@@ -137,27 +150,19 @@ async function buildStack(repos) {
     try {
       const languages = await getLanguages(repo);
 
+      console.log(`\nLenguajes de ${repo.full_name}:`);
+
       for (const [language, bytes] of Object.entries(languages)) {
+        console.log(`- ${language}: ${bytes} bytes`);
+
         languageTotals[language] =
           (languageTotals[language] || 0) + bytes;
       }
     } catch (error) {
       console.log(
-        `No se pudieron leer los lenguajes de ${repo.name}: ${error.message}`
+        `No se pudieron leer los lenguajes de ${repo.full_name}: ${error.message}`
       );
     }
-  }
-
-  console.log("\nBytes por lenguaje (antes de filtrar):");
-
-  for (const [language, bytes] of Object.entries(languageTotals).sort(
-    (a, b) => b[1] - a[1]
-  )) {
-    console.log(
-      `- ${language}: ${bytes} bytes${
-        languageIconMap[language] ? "" : " (sin icono configurado)"
-      }`
-    );
   }
 
   const totalBytes = Object.values(languageTotals).reduce(
@@ -166,10 +171,12 @@ async function buildStack(repos) {
   );
 
   if (totalBytes === 0) {
+    console.log(
+      "No se encontraron bytes de lenguaje en los repositorios analizados."
+    );
+
     return `<p align="center">No hay lenguajes detectados todavía.</p>`;
   }
-
-  const MIN_PERCENTAGE = 1;
 
   const languages = Object.entries(languageTotals)
     .map(([language, bytes]) => ({
@@ -177,33 +184,50 @@ async function buildStack(repos) {
       bytes,
       percentage: (bytes / totalBytes) * 100,
     }))
-    .filter(
-      (item) =>
-        item.percentage >= MIN_PERCENTAGE &&
-        languageIconMap[item.language]
-    )
-    .sort((a, b) => b.bytes - a.bytes)
-    .slice(0, 12);
+    .sort((a, b) => b.bytes - a.bytes);
 
-  if (languages.length === 0) {
-    return `<p align="center">No se encontraron lenguajes con iconos compatibles.</p>`;
-  }
-
-  console.log("\nLenguajes mostrados en el README:");
+  console.log("\nResumen de lenguajes detectados:");
 
   for (const item of languages) {
     console.log(
-      `${item.language}: ${item.percentage.toFixed(2)}%`
+      `- ${item.language}: ${item.percentage.toFixed(2)}%`
     );
   }
 
-  const icons = languages
-    .map((item) => languageIconMap[item.language])
-    .join(",");
+  /*
+   * Mostramos los lenguajes que representan al menos el 1 %
+   * y conservamos un máximo de 16 iconos.
+   */
+  const visibleLanguages = languages.filter(
+    (item) => item.percentage >= 1
+  );
 
-  return `<p align="center">
-<img src="https://skillicons.dev/icons?i=${icons}&perline=8" alt="Tecnologías detectadas"/>
-</p>`;
+  const icons = visibleLanguages
+    .filter((item) => languageIconMap[item.language])
+    .slice(0, 16)
+    .map((item) => languageIconMap[item.language]);
+
+  const uniqueIcons = [...new Set(icons)];
+
+  const iconSection = uniqueIcons.length
+    ? `<p align="center">
+<img src="https://skillicons.dev/icons?i=${uniqueIcons.join(",")}&perline=8" alt="Iconos de lenguajes detectados"/>
+</p>`
+    : "";
+
+  /*
+   * Lista textual para no perder lenguajes que no tengan
+   * un icono configurado o compatible.
+   */
+  const languageNames = visibleLanguages
+    .map((item) => item.language)
+    .join(" · ");
+
+  const languageSection = languageNames
+    ? `<p align="center"><strong>Lenguajes detectados:</strong><br>${languageNames}</p>`
+    : "";
+
+  return `${iconSection}\n${languageSection}`;
 }
 
 /* ─────────────────────────────────────────────
@@ -212,20 +236,22 @@ async function buildStack(repos) {
 
 async function getRepoTree(repo) {
   try {
+    const repoOwner = repo.owner?.login || owner;
+
     return await github(
-      `/repos/${owner}/${repo.name}/git/trees/${repo.default_branch}?recursive=1`
+      `/repos/${repoOwner}/${repo.name}/git/trees/${repo.default_branch}?recursive=1`
     );
-  } catch {
+  } catch (error) {
+    console.log(
+      `No se pudo inspeccionar ${repo.full_name}: ${error.message}`
+    );
+
     return { tree: [] };
   }
 }
 
 function hasFile(tree, names) {
   return tree.some((item) => {
-    if (item.type !== "blob" && item.type !== "tree") {
-      return false;
-    }
-
     const path = item.path.toLowerCase();
 
     return names.some((name) => {
@@ -249,12 +275,13 @@ function hasExtension(tree, extension) {
    ───────────────────────────────────────────── */
 
 async function detectEnvironment(repos) {
-  const detected = new Set();
+  const detected = new Set(["Git", "GitHub"]);
 
-  detected.add("Git");
-  detected.add("GitHub");
-
-  const reposToInspect = repos.slice(0, 20);
+  const reposToInspect = repos
+    .filter(
+      (repo) => repo.name.toLowerCase() !== owner.toLowerCase()
+    )
+    .slice(0, 30);
 
   for (const repo of reposToInspect) {
     const result = await getRepoTree(repo);
@@ -282,7 +309,8 @@ async function detectEnvironment(repos) {
     if (
       hasFile(tree, ["dockerfile"]) ||
       hasFile(tree, ["docker-compose.yml"]) ||
-      hasFile(tree, ["compose.yml"])
+      hasFile(tree, ["compose.yml"]) ||
+      hasFile(tree, ["compose.yaml"])
     ) {
       detected.add("Docker");
     }
@@ -294,7 +322,8 @@ async function detectEnvironment(repos) {
     if (
       hasFile(tree, ["build.gradle"]) ||
       hasFile(tree, ["settings.gradle"]) ||
-      hasFile(tree, ["build.gradle.kts"])
+      hasFile(tree, ["build.gradle.kts"]) ||
+      hasFile(tree, ["settings.gradle.kts"])
     ) {
       detected.add("Gradle");
     }
@@ -327,10 +356,9 @@ async function detectEnvironment(repos) {
     }
 
     if (
-      hasFile(tree, ["mysql"]) ||
-      hasFile(tree, ["mysqld"]) ||
       hasFile(tree, ["mysql-connector"]) ||
-      hasFile(tree, ["mysql-connector-j"])
+      hasFile(tree, ["mysql-connector-j"]) ||
+      hasFile(tree, ["mysql-connector-java"])
     ) {
       detected.add("MySQL");
     }
@@ -345,8 +373,8 @@ async function detectEnvironment(repos) {
     }
 
     if (
-      hasFile(tree, ["postgres"]) ||
-      hasFile(tree, ["postgresql"])
+      hasFile(tree, ["postgresql"]) ||
+      hasFile(tree, ["postgres"])
     ) {
       detected.add("PostgreSQL");
     }
@@ -390,14 +418,14 @@ function buildToolIcons(tools) {
     .map((tool) => toolIconMap[tool])
     .filter(Boolean);
 
-  if (icons.length === 0) {
-    return `<p align="center">
-Herramientas detectadas automáticamente.
-</p>`;
+  const uniqueIcons = [...new Set(icons)];
+
+  if (uniqueIcons.length === 0) {
+    return `<p align="center">Herramientas detectadas automáticamente.</p>`;
   }
 
   return `<p align="center">
-<img src="https://skillicons.dev/icons?i=${icons.join(",")}&perline=8" alt="Entorno de desarrollo"/>
+<img src="https://skillicons.dev/icons?i=${uniqueIcons.join(",")}&perline=8" alt="Entorno de desarrollo"/>
 </p>`;
 }
 
@@ -424,8 +452,10 @@ function calculateProjectScore(repo) {
 }
 
 function projectCard(repo) {
+  const repoOwner = repo.owner?.login || owner;
+
   return `<a href="${repo.html_url}">
-<img src="https://github-readme-stats.vercel.app/api/pin/?username=${owner}&repo=${repo.name}&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA"/>
+<img src="https://github-readme-stats.vercel.app/api/pin/?username=${repoOwner}&repo=${repo.name}&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="${repo.name}"/>
 </a>`;
 }
 
@@ -444,10 +474,13 @@ async function buildProjects(repos) {
 
   const selected = sorted.slice(0, 4);
 
+  console.log(
+    "\nProyectos seleccionados:",
+    selected.map((repo) => repo.full_name)
+  );
+
   if (selected.length === 0) {
-    return `<p align="center">
-Todavía no hay proyectos públicos disponibles.
-</p>`;
+    return `<p align="center">Todavía no hay proyectos públicos disponibles.</p>`;
   }
 
   return selected.map(projectCard).join("\n\n");
@@ -472,9 +505,7 @@ function replaceSection(
     end < start
   ) {
     throw new Error(
-      `No se encontraron los marcadores:
-${startMarker}
-${endMarker}`
+      `No se encontraron los marcadores:\n${startMarker}\n${endMarker}`
     );
   }
 
@@ -500,19 +531,16 @@ async function main() {
 
   const repos = await getAllRepos();
 
-  console.log(`Repositorios encontrados: ${repos.length}`);
+  console.log(`\nRepositorios públicos encontrados: ${repos.length}`);
 
-  console.log("Analizando lenguajes...");
-
+  console.log("\nAnalizando lenguajes...");
   const stack = await buildStack(repos);
 
-  console.log("Analizando entorno...");
-
+  console.log("\nAnalizando entorno...");
   const tools = await detectEnvironment(repos);
   const environment = buildToolIcons(tools);
 
-  console.log("Seleccionando proyectos...");
-
+  console.log("\nSeleccionando proyectos...");
   const projects = await buildProjects(repos);
 
   let readme = await fs.readFile("README.md", "utf8");
@@ -538,13 +566,13 @@ async function main() {
     projects
   );
 
-  await fs.writeFile("README.md", readme);
+  await fs.writeFile("README.md", readme, "utf8");
 
-  console.log("\n✅ README actualizado correctamente.");
-  console.log("🛠️ Entorno:", tools.join(", "));
+  console.log("\nREADME actualizado correctamente.");
+  console.log("Entorno detectado:", tools.join(", "));
 }
 
 main().catch((error) => {
-  console.error("❌ Error:", error);
+  console.error("Error:", error);
   process.exit(1);
 });
