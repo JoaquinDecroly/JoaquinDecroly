@@ -140,8 +140,11 @@ async function getLanguages(repo) {
   );
 }
 
+
 async function buildStack(repos) {
-  const languageTotals = {};
+  const languageScores = {};
+  const languageRepos = {};
+
   const reposForLanguages = repos.filter(
     (repo) => repo.name.toLowerCase() !== owner.toLowerCase()
   );
@@ -149,14 +152,32 @@ async function buildStack(repos) {
   for (const repo of reposForLanguages) {
     try {
       const languages = await getLanguages(repo);
+      const entries = Object.entries(languages);
+      const repoTotal = entries.reduce(
+        (sum, [, bytes]) => sum + bytes,
+        0
+      );
+
+      if (repoTotal === 0) continue;
 
       console.log(`\nLenguajes de ${repo.full_name}:`);
 
-      for (const [language, bytes] of Object.entries(languages)) {
-        console.log(`- ${language}: ${bytes} bytes`);
+      for (const [language, bytes] of entries) {
+        const percentage = (bytes / repoTotal) * 100;
 
-        languageTotals[language] =
-          (languageTotals[language] || 0) + bytes;
+        console.log(
+          `- ${language}: ${bytes} bytes (${percentage.toFixed(2)} % del repositorio)`
+        );
+
+        /*
+         * Cada repositorio aporta porcentajes, en lugar de
+         * competir según su tamaño absoluto.
+         */
+        languageScores[language] =
+          (languageScores[language] || 0) + percentage;
+
+        languageRepos[language] =
+          (languageRepos[language] || 0) + 1;
       }
     } catch (error) {
       console.log(
@@ -165,60 +186,49 @@ async function buildStack(repos) {
     }
   }
 
-  const totalBytes = Object.values(languageTotals).reduce(
-    (total, bytes) => total + bytes,
-    0
-  );
-
-  if (totalBytes === 0) {
-    console.log(
-      "No se encontraron bytes de lenguaje en los repositorios analizados."
-    );
-
-    return `<p align="center">No hay lenguajes detectados todavía.</p>`;
-  }
-
-  const languages = Object.entries(languageTotals)
-    .map(([language, bytes]) => ({
+  const languages = Object.entries(languageScores)
+    .map(([language, score]) => ({
       language,
-      bytes,
-      percentage: (bytes / totalBytes) * 100,
+      score,
+      repositories: languageRepos[language] || 0,
     }))
-    .sort((a, b) => b.bytes - a.bytes);
+    .sort((a, b) => b.score - a.score);
 
-  console.log("\nResumen de lenguajes detectados:");
+  console.log("\nPuntuación equilibrada por lenguaje:");
 
   for (const item of languages) {
     console.log(
-      `- ${item.language}: ${item.percentage.toFixed(2)}%`
+      `- ${item.language}: ${item.score.toFixed(2)} puntos, presente en ${item.repositories} repositorio(s)`
     );
   }
 
+  if (languages.length === 0) {
+    return `<p align="center">No hay lenguajes detectados todavía.</p>`;
+  }
+
   /*
-   * Mostramos los lenguajes que representan al menos el 1 %
-   * y conservamos un máximo de 16 iconos.
+   * Conserva lenguajes relevantes sin exigir que superen
+   * un porcentaje global dominado por un único repositorio.
    */
   const visibleLanguages = languages.filter(
-    (item) => item.percentage >= 1
+    (item) => item.score >= 1
   );
 
-  const icons = visibleLanguages
-    .filter((item) => languageIconMap[item.language])
-    .slice(0, 16)
-    .map((item) => languageIconMap[item.language]);
+  const icons = [
+    ...new Set(
+      visibleLanguages
+        .filter((item) => languageIconMap[item.language])
+        .slice(0, 16)
+        .map((item) => languageIconMap[item.language])
+    ),
+  ];
 
-  const uniqueIcons = [...new Set(icons)];
-
-  const iconSection = uniqueIcons.length
+  const iconSection = icons.length
     ? `<p align="center">
-<img src="https://skillicons.dev/icons?i=${uniqueIcons.join(",")}&perline=8" alt="Iconos de lenguajes detectados"/>
+<img src="https://skillicons.dev/icons?i=${icons.join(",")}&perline=8" alt="Iconos de lenguajes detectados"/>
 </p>`
     : "";
 
-  /*
-   * Lista textual para no perder lenguajes que no tengan
-   * un icono configurado o compatible.
-   */
   const languageNames = visibleLanguages
     .map((item) => item.language)
     .join(" · ");
