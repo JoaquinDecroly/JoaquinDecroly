@@ -1,3 +1,4 @@
+
 name: Actualizar perfil dinámico
 
 on:
@@ -11,9 +12,8 @@ on:
       - ".github/workflows/profile-dinamico.yml"
       - "scripts/update-profile.mjs"
 
-# Evita ejecuciones simultáneas del mismo workflow.
 concurrency:
-  group: actualizar-perfil-main
+  group: actualizar-perfil-dinamico
   cancel-in-progress: false
 
 permissions:
