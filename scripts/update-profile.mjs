@@ -211,8 +211,8 @@ async function buildStack(repos) {
    * un porcentaje global dominado por un único repositorio.
    */
   const visibleLanguages = languages.filter(
-    (item) => item.score >= 1
-  );
+  (item) => item.score > 0
+);
 
   const icons = [
     ...new Set(
