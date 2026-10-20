@@ -243,7 +243,7 @@ IDEs
 
 <!-- AUTO-ENV:START -->
 <p align="center">
-<img src="https://skillicons.dev/icons?i=git,github,idea,vscode,maven,java,spring,bootstrap,githubactions&perline=8" alt="Entorno de desarrollo"/>
+<img src="https://skillicons.dev/icons?i=git,github,idea,vscode,maven,nodejs,java,spring,bootstrap,githubactions&perline=8" alt="Entorno de desarrollo"/>
 </p>
 <!-- AUTO-ENV:END -->
 
