@@ -154,9 +154,9 @@ IDEs
 
 <!-- AUTO-STACK:START -->
 <p align="center">
-<img src="https://skillicons.dev/icons?i=java,html,js,css,ts,php&perline=8" alt="Iconos de lenguajes detectados"/>
+<img src="https://skillicons.dev/icons?i=java,html,js,ts,css,php&perline=8" alt="Iconos de lenguajes detectados"/>
 </p>
-<p align="center"><strong>Lenguajes detectados:</strong><br>Java · HTML · JavaScript · CSS · TypeScript · PHP</p>
+<p align="center"><strong>Lenguajes detectados:</strong><br>Java · HTML · JavaScript · TypeScript · CSS · PHP</p>
 <!-- AUTO-STACK:END -->
 
 </div>
@@ -202,12 +202,12 @@ IDEs
 <img src="https://github-readme-stats.vercel.app/api/pin/?username=JoaquinDecroly&repo=Daw2Decroly2027&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="Daw2Decroly2027"/>
 </a>
 
-<a href="https://github.com/JoaquinDecroly/tienda">
-<img src="https://github-readme-stats.vercel.app/api/pin/?username=JoaquinDecroly&repo=tienda&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="tienda"/>
-</a>
-
 <a href="https://github.com/JoaquinDecroly/DWEC_26_27">
 <img src="https://github-readme-stats.vercel.app/api/pin/?username=JoaquinDecroly&repo=DWEC_26_27&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="DWEC_26_27"/>
+</a>
+
+<a href="https://github.com/JoaquinDecroly/tienda">
+<img src="https://github-readme-stats.vercel.app/api/pin/?username=JoaquinDecroly&repo=tienda&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="tienda"/>
 </a>
 
 <a href="https://github.com/JoaquinDecroly/todotabla">
