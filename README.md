@@ -154,9 +154,9 @@ IDEs
 
 <!-- AUTO-STACK:START -->
 <p align="center">
-<img src="https://skillicons.dev/icons?i=java,html,js,ts,css,php&perline=8" alt="Iconos de lenguajes detectados"/>
+<img src="https://skillicons.dev/icons?i=java,html,ts,js,css,php&perline=8" alt="Iconos de lenguajes detectados"/>
 </p>
-<p align="center"><strong>Lenguajes detectados:</strong><br>Java · HTML · JavaScript · TypeScript · CSS · PHP</p>
+<p align="center"><strong>Lenguajes detectados:</strong><br>Java · HTML · TypeScript · JavaScript · CSS · PHP</p>
 <!-- AUTO-STACK:END -->
 
 </div>
