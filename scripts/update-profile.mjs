@@ -469,8 +469,22 @@ function projectCard(repo) {
 </a>`;
 }
 
+async function repoHasReadme(repo) {
+  const repoOwner = repo.owner?.login || owner;
+
+  try {
+    await github(`/repos/${repoOwner}/${repo.name}/readme`);
+    return true;
+  } catch (error) {
+    console.log(
+      `Se omite ${repo.full_name} porque no tiene README o no es accesible: ${error.message}`
+    );
+    return false;
+  }
+}
+
 async function buildProjects(repos) {
-  const sorted = [...repos]
+  const candidateRepos = [...repos]
     .filter(
       (repo) =>
         repo.name.toLowerCase() !== owner.toLowerCase() &&
@@ -482,12 +496,21 @@ async function buildProjects(repos) {
         calculateProjectScore(a)
     );
 
-  const selected = sorted.slice(0, 4);
+  const validRepos = [];
 
-  console.log(
-    "\nProyectos seleccionados:",
-    selected.map((repo) => repo.full_name)
-  );
+  for (const repo of candidateRepos) {
+    const hasReadme = await repoHasReadme(repo);
+
+    if (hasReadme) {
+      validRepos.push(repo);
+    }
+
+    if (validRepos.length >= 4) {
+      break;
+    }
+  }
+
+  const selected = validRepos.slice(0, 4);
 
   if (selected.length === 0) {
     return `<p align="center">Todavía no hay proyectos públicos disponibles.</p>`;
