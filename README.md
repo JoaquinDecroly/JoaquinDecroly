@@ -154,9 +154,9 @@ IDEs
 
 <!-- AUTO-STACK:START -->
 <p align="center">
-<img src="https://skillicons.dev/icons?i=html,java,ts,css,js,php&perline=8" alt="Iconos de lenguajes detectados"/>
+<img src="https://skillicons.dev/icons?i=java,html,ts,css,js,php&perline=8" alt="Iconos de lenguajes detectados"/>
 </p>
-<p align="center"><strong>Lenguajes detectados:</strong><br>HTML · Java · TypeScript · CSS · JavaScript · PHP</p>
+<p align="center"><strong>Lenguajes detectados:</strong><br>Java · HTML · TypeScript · CSS · JavaScript · PHP</p>
 <!-- AUTO-STACK:END -->
 
 </div>
@@ -200,10 +200,6 @@ IDEs
 <!-- AUTO-PROJECTS:START -->
 <a href="https://github.com/JoaquinDecroly/Daw2Decroly2027">
 <img src="https://github-readme-stats.vercel.app/api/pin/?username=JoaquinDecroly&repo=Daw2Decroly2027&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="Daw2Decroly2027"/>
-</a>
-
-<a href="https://github.com/JoaquinDecroly/bibliotecaDecroly">
-<img src="https://github-readme-stats.vercel.app/api/pin/?username=JoaquinDecroly&repo=bibliotecaDecroly&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="bibliotecaDecroly"/>
 </a>
 
 <a href="https://github.com/JoaquinDecroly/DWEC_26_27">
