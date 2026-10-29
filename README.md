@@ -206,10 +206,6 @@ IDEs
 <img src="https://github-readme-stats.vercel.app/api/pin/?username=JoaquinDecroly&repo=DWEC_26_27&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="DWEC_26_27"/>
 </a>
 
-<a href="https://github.com/JoaquinDecroly/tienda">
-<img src="https://github-readme-stats.vercel.app/api/pin/?username=JoaquinDecroly&repo=tienda&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="tienda"/>
-</a>
-
 <a href="https://github.com/JoaquinDecroly/todotabla">
 <img src="https://github-readme-stats.vercel.app/api/pin/?username=JoaquinDecroly&repo=todotabla&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="todotabla"/>
 </a>
