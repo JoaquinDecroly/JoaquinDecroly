@@ -203,7 +203,7 @@ IDEs
 </a>
 
 <a href="https://github.com/JoaquinDecroly/bibliotecaDecroly">
-<img src="https://github-readme-stats.vercel.app/api/pin/?username=JoaquinDecroly&repo=bibliotecaDecroly&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="bibliotecaDecroly"/>
+<img src="https://github-stats-extended.vercel.app/api/pin/?username=JoaquinDecroly&repo=bibliotecaDecroly&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="bibliotecaDecroly"/>
 </a>
 
 <a href="https://github.com/JoaquinDecroly/DWEC_26_27">
