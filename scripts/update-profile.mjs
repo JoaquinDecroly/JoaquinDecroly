@@ -465,7 +465,7 @@ function projectCard(repo) {
   const repoOwner = repo.owner?.login || owner;
 
   return `<a href="${repo.html_url}">
-<img src="https://github-readme-stats.vercel.app/api/pin/?username=${repoOwner}&repo=${repo.name}&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="${repo.name}"/>
+<img src="https://github-stats-extended.vercel.app/api/pin/?username=${repoOwner}&repo=${repo.name}&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="${repo.name}"/>
 </a>`;
 }
 
