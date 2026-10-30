@@ -163,17 +163,18 @@ IDEs
 
 ---
 
+
 <div align="center">
 
 ## 📊 GitHub Analytics
 
-<img src="https://github-readme-stats.vercel.app/api?username=JoaquinDecroly&show_icons=true&hide_border=true&bg_color=00000000&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA&rank_icon=github&include_all_commits=true" height="180"/>
+<img src="https://github-stats-extended.vercel.app/api?username=JoaquinDecroly&show_icons=true&hide_border=true&bg_color=00000000&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA&rank_icon=github&include_all_commits=true" height="180"/>
 
-<img src="https://github-readme-stats.vercel.app/api/top-langs/?username=JoaquinDecroly&layout=compact&hide_border=true&bg_color=00000000&title_color=60A5FA&text_color=CBD5E1&langs_count=8" height="180"/>
+<img src="https://github-stats-extended.vercel.app/api/top-langs/?username=JoaquinDecroly&layout=compact&hide_border=true&bg_color=00000000&title_color=60A5FA&text_color=CBD5E1&langs_count=8" height="180"/>
 
 <br><br>
 
-<img src="https://github-readme-streak-stats.herokuapp.com/?user=JoaquinDecroly&theme=transparent&hide_border=true&ring=2563EB&fire=60A5FA&currStreakLabel=60A5FA&sideLabels=CBD5E1&dates=64748B" width="520"/>
+<img src="https://streak-stats.demolab.com/?user=JoaquinDecroly&theme=transparent&hide_border=true&ring=2563EB&fire=60A5FA&currStreakLabel=60A5FA&sideLabels=CBD5E1&dates=64748B" width="520"/>
 
 </div>
 
