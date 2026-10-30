@@ -198,12 +198,12 @@ IDEs
 <br>
 
 <!-- AUTO-PROJECTS:START -->
-<a href="https://github.com/JoaquinDecroly/bibliotecaDecroly">
-<img src="https://github-stats-extended.vercel.app/api/pin/?username=JoaquinDecroly&repo=bibliotecaDecroly&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="bibliotecaDecroly"/>
-</a>
-
 <a href="https://github.com/JoaquinDecroly/Daw2Decroly2027">
 <img src="https://github-stats-extended.vercel.app/api/pin/?username=JoaquinDecroly&repo=Daw2Decroly2027&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="Daw2Decroly2027"/>
+</a>
+
+<a href="https://github.com/JoaquinDecroly/bibliotecaDecroly">
+<img src="https://github-stats-extended.vercel.app/api/pin/?username=JoaquinDecroly&repo=bibliotecaDecroly&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="bibliotecaDecroly"/>
 </a>
 
 <a href="https://github.com/JoaquinDecroly/DWEC_26_27">
