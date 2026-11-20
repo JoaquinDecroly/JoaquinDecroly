@@ -207,12 +207,12 @@ IDEs
 <img src="https://github-stats-extended.vercel.app/api/pin/?username=JoaquinDecroly&repo=bibliotecaDecroly&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="bibliotecaDecroly"/>
 </a>
 
-<a href="https://github.com/JoaquinDecroly/DWEC_26_27">
-<img src="https://github-stats-extended.vercel.app/api/pin/?username=JoaquinDecroly&repo=DWEC_26_27&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="DWEC_26_27"/>
-</a>
-
 <a href="https://github.com/JoaquinDecroly/tienda">
 <img src="https://github-stats-extended.vercel.app/api/pin/?username=JoaquinDecroly&repo=tienda&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="tienda"/>
+</a>
+
+<a href="https://github.com/JoaquinDecroly/DWEC_26_27">
+<img src="https://github-stats-extended.vercel.app/api/pin/?username=JoaquinDecroly&repo=DWEC_26_27&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="DWEC_26_27"/>
 </a>
 <!-- AUTO-PROJECTS:END -->
 
