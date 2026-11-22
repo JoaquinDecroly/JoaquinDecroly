@@ -39,9 +39,7 @@ async function getAllRepos() {
 
     repos.push(...data);
 
-    if (data.length < 100) {
-      break;
-    }
+    if (data.length < 100) break;
   }
 
   const filtered = repos.filter(
@@ -59,8 +57,6 @@ async function getAllRepos() {
 
 /* ─────────────────────────────────────────────
    ICONOS DE LENGUAJES
-   Los lenguajes se conservan aunque no tengan
-   un icono disponible en Skill Icons.
    ───────────────────────────────────────────── */
 
 const languageIconMap = {
@@ -140,7 +136,6 @@ async function getLanguages(repo) {
   );
 }
 
-
 async function buildStack(repos) {
   const languageScores = {};
   const languageRepos = {};
@@ -153,6 +148,7 @@ async function buildStack(repos) {
     try {
       const languages = await getLanguages(repo);
       const entries = Object.entries(languages);
+
       const repoTotal = entries.reduce(
         (sum, [, bytes]) => sum + bytes,
         0
@@ -169,10 +165,6 @@ async function buildStack(repos) {
           `- ${language}: ${bytes} bytes (${percentage.toFixed(2)} % del repositorio)`
         );
 
-        /*
-         * Cada repositorio aporta porcentajes, en lugar de
-         * competir según su tamaño absoluto.
-         */
         languageScores[language] =
           (languageScores[language] || 0) + percentage;
 
@@ -206,13 +198,9 @@ async function buildStack(repos) {
     return `<p align="center">No hay lenguajes detectados todavía.</p>`;
   }
 
-  /*
-   * Conserva lenguajes relevantes sin exigir que superen
-   * un porcentaje global dominado por un único repositorio.
-   */
   const visibleLanguages = languages.filter(
-  (item) => item.score > 0
-);
+    (item) => item.score > 0
+  );
 
   const icons = [
     ...new Set(
@@ -443,6 +431,9 @@ function buildToolIcons(tools) {
    PROYECTOS
    ───────────────────────────────────────────── */
 
+// Número de días para considerar un proyecto actualizado.
+const RECENT_ACTIVITY_DAYS = 7;
+
 function calculateProjectScore(repo) {
   const daysSincePush =
     (Date.now() - new Date(repo.pushed_at).getTime()) /
@@ -461,12 +452,65 @@ function calculateProjectScore(repo) {
   );
 }
 
+// Calcula el tiempo transcurrido desde el último push.
+function formatTimeAgo(dateString) {
+  if (!dateString) return "fecha no disponible";
+
+  const timestamp = new Date(dateString).getTime();
+
+  if (Number.isNaN(timestamp)) {
+    return "fecha no disponible";
+  }
+
+  const elapsed = Math.max(0, Date.now() - timestamp);
+
+  const minutes = Math.floor(elapsed / (1000 * 60));
+  const hours = Math.floor(elapsed / (1000 * 60 * 60));
+  const days = Math.floor(elapsed / (1000 * 60 * 60 * 24));
+  const months = Math.floor(days / 30);
+  const years = Math.floor(days / 365);
+
+  if (minutes < 1) return "ahora mismo";
+  if (minutes < 60) return `hace ${minutes} min`;
+  if (hours < 24) return `hace ${hours} h`;
+  if (days < 30) return `hace ${days} ${days === 1 ? "día" : "días"}`;
+  if (days < 365) return `hace ${months} ${months === 1 ? "mes" : "meses"}`;
+
+  return `hace ${years} ${years === 1 ? "año" : "años"}`;
+}
+
+// Genera la tarjeta del proyecto con su estado de actividad.
 function projectCard(repo) {
   const repoOwner = repo.owner?.login || owner;
+  const pushedAt = repo.pushed_at;
 
-  return `<a href="${repo.html_url}">
-<img src="https://github-stats-extended.vercel.app/api/pin/?username=${repoOwner}&repo=${repo.name}&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="${repo.name}"/>
-</a>`;
+  const daysSincePush = pushedAt
+    ? (Date.now() - new Date(pushedAt).getTime()) /
+      (1000 * 60 * 60 * 24)
+    : Infinity;
+
+  const recentlyUpdated =
+    daysSincePush <= RECENT_ACTIVITY_DAYS;
+
+  const badgeLabel = recentlyUpdated
+    ? "ACTUALIZADO"
+    : "SIN CAMBIOS RECIENTES";
+
+  const badgeColor = recentlyUpdated
+    ? "16A34A"
+    : "475569";
+
+  const lastActivity = formatTimeAgo(pushedAt);
+
+  return `<div align="center">
+  <a href="${repo.html_url}">
+    <img src="https://github-stats-extended.vercel.app/api/pin/?username=${repoOwner}&repo=${repo.name}&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="${repo.name}"/>
+  </a>
+  <br>
+  <img src="https://img.shields.io/badge/${encodeURIComponent(badgeLabel)}-${badgeColor}?style=flat-square&logo=github&logoColor=white" alt="${badgeLabel}"/>
+  <br>
+  <sub>Último push: ${lastActivity}</sub>
+</div>`;
 }
 
 async function repoHasReadme(repo) {
@@ -479,6 +523,7 @@ async function repoHasReadme(repo) {
     console.log(
       `Se omite ${repo.full_name} porque no tiene README o no es accesible: ${error.message}`
     );
+
     return false;
   }
 }
@@ -564,7 +609,9 @@ async function main() {
 
   const repos = await getAllRepos();
 
-  console.log(`\nRepositorios públicos encontrados: ${repos.length}`);
+  console.log(
+    `\nRepositorios públicos encontrados: ${repos.length}`
+  );
 
   console.log("\nAnalizando lenguajes...");
   const stack = await buildStack(repos);
