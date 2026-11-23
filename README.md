@@ -220,16 +220,6 @@ IDEs
 </div>
 
 <div align="center">
-  <a href="https://github.com/JoaquinDecroly/DWEC_26_27">
-    <img src="https://github-stats-extended.vercel.app/api/pin/?username=JoaquinDecroly&repo=DWEC_26_27&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="DWEC_26_27"/>
-  </a>
-  <br>
-  <img src="https://img.shields.io/badge/ACTUALIZADO-16A34A?style=flat-square&logo=github&logoColor=white" alt="ACTUALIZADO"/>
-  <br>
-  <sub>Último push: hace 2 días</sub>
-</div>
-
-<div align="center">
   <a href="https://github.com/JoaquinDecroly/tienda">
     <img src="https://github-stats-extended.vercel.app/api/pin/?username=JoaquinDecroly&repo=tienda&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="tienda"/>
   </a>
@@ -237,6 +227,16 @@ IDEs
   <img src="https://img.shields.io/badge/ACTUALIZADO-16A34A?style=flat-square&logo=github&logoColor=white" alt="ACTUALIZADO"/>
   <br>
   <sub>Último push: hace 1 día</sub>
+</div>
+
+<div align="center">
+  <a href="https://github.com/JoaquinDecroly/DWEC_26_27">
+    <img src="https://github-stats-extended.vercel.app/api/pin/?username=JoaquinDecroly&repo=DWEC_26_27&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="DWEC_26_27"/>
+  </a>
+  <br>
+  <img src="https://img.shields.io/badge/ACTUALIZADO-16A34A?style=flat-square&logo=github&logoColor=white" alt="ACTUALIZADO"/>
+  <br>
+  <sub>Último push: hace 3 días</sub>
 </div>
 <!-- AUTO-PROJECTS:END -->
 
