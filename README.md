@@ -206,7 +206,7 @@ IDEs
   <br>
   <img src="https://img.shields.io/badge/ACTUALIZADO-16A34A?style=flat-square&logo=github&logoColor=white" alt="ACTUALIZADO"/>
   <br>
-  <sub>Último push: hace 5 min</sub>
+  <sub>Último push: hace 20 h</sub>
 </div>
 
 <div align="center">
@@ -216,7 +216,7 @@ IDEs
   <br>
   <img src="https://img.shields.io/badge/SIN%20CAMBIOS%20RECIENTES-475569?style=flat-square&logo=github&logoColor=white" alt="SIN CAMBIOS RECIENTES"/>
   <br>
-  <sub>Último push: hace 12 días</sub>
+  <sub>Último push: hace 13 días</sub>
 </div>
 
 <div align="center">
@@ -226,7 +226,7 @@ IDEs
   <br>
   <img src="https://img.shields.io/badge/ACTUALIZADO-16A34A?style=flat-square&logo=github&logoColor=white" alt="ACTUALIZADO"/>
   <br>
-  <sub>Último push: hace 1 min</sub>
+  <sub>Último push: hace 20 h</sub>
 </div>
 
 <div align="center">
@@ -236,7 +236,7 @@ IDEs
   <br>
   <img src="https://img.shields.io/badge/ACTUALIZADO-16A34A?style=flat-square&logo=github&logoColor=white" alt="ACTUALIZADO"/>
   <br>
-  <sub>Último push: hace 1 día</sub>
+  <sub>Último push: hace 18 h</sub>
 </div>
 <!-- AUTO-PROJECTS:END -->
 
