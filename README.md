@@ -200,23 +200,23 @@ IDEs
 
 <!-- AUTO-PROJECTS:START -->
 <div align="center">
+  <a href="https://github.com/JoaquinDecroly/bibliotecaDecroly">
+    <img src="https://github-stats-extended.vercel.app/api/pin/?username=JoaquinDecroly&repo=bibliotecaDecroly&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="bibliotecaDecroly"/>
+  </a>
+  <br>
+  <img src="https://img.shields.io/badge/ACTUALIZADO-16A34A?style=flat-square&logo=github&logoColor=white" alt="ACTUALIZADO"/>
+  <br>
+  <sub>Último push: hace 2 h</sub>
+</div>
+
+<div align="center">
   <a href="https://github.com/JoaquinDecroly/Daw2Decroly2027">
     <img src="https://github-stats-extended.vercel.app/api/pin/?username=JoaquinDecroly&repo=Daw2Decroly2027&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="Daw2Decroly2027"/>
   </a>
   <br>
   <img src="https://img.shields.io/badge/ACTUALIZADO-16A34A?style=flat-square&logo=github&logoColor=white" alt="ACTUALIZADO"/>
   <br>
-  <sub>Último push: ahora mismo</sub>
-</div>
-
-<div align="center">
-  <a href="https://github.com/JoaquinDecroly/bibliotecaDecroly">
-    <img src="https://github-stats-extended.vercel.app/api/pin/?username=JoaquinDecroly&repo=bibliotecaDecroly&theme=transparent&hide_border=true&title_color=60A5FA&text_color=CBD5E1&icon_color=60A5FA" alt="bibliotecaDecroly"/>
-  </a>
-  <br>
-  <img src="https://img.shields.io/badge/SIN%20CAMBIOS%20RECIENTES-475569?style=flat-square&logo=github&logoColor=white" alt="SIN CAMBIOS RECIENTES"/>
-  <br>
-  <sub>Último push: hace 14 días</sub>
+  <sub>Último push: hace 3 h</sub>
 </div>
 
 <div align="center">
@@ -226,7 +226,7 @@ IDEs
   <br>
   <img src="https://img.shields.io/badge/ACTUALIZADO-16A34A?style=flat-square&logo=github&logoColor=white" alt="ACTUALIZADO"/>
   <br>
-  <sub>Último push: hace 16 h</sub>
+  <sub>Último push: hace 19 h</sub>
 </div>
 
 <div align="center">
