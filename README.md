@@ -154,9 +154,9 @@ IDEs
 
 <!-- AUTO-STACK:START -->
 <p align="center">
-<img src="https://skillicons.dev/icons?i=html,java,css,ts,js,php&perline=8" alt="Iconos de lenguajes detectados"/>
+<img src="https://skillicons.dev/icons?i=html,java,ts,css,js,php&perline=8" alt="Iconos de lenguajes detectados"/>
 </p>
-<p align="center"><strong>Lenguajes detectados:</strong><br>HTML · Java · CSS · TypeScript · JavaScript · PHP</p>
+<p align="center"><strong>Lenguajes detectados:</strong><br>HTML · Java · TypeScript · CSS · JavaScript · PHP</p>
 <!-- AUTO-STACK:END -->
 
 </div>
@@ -206,7 +206,7 @@ IDEs
   <br>
   <img src="https://img.shields.io/badge/ACTUALIZADO-16A34A?style=flat-square&logo=github&logoColor=white" alt="ACTUALIZADO"/>
   <br>
-  <sub>Último push: hace 2 h</sub>
+  <sub>Último push: hace 17 h</sub>
 </div>
 
 <div align="center">
@@ -216,7 +216,7 @@ IDEs
   <br>
   <img src="https://img.shields.io/badge/ACTUALIZADO-16A34A?style=flat-square&logo=github&logoColor=white" alt="ACTUALIZADO"/>
   <br>
-  <sub>Último push: hace 1 día</sub>
+  <sub>Último push: hace 2 días</sub>
 </div>
 
 <div align="center">
@@ -226,7 +226,7 @@ IDEs
   <br>
   <img src="https://img.shields.io/badge/ACTUALIZADO-16A34A?style=flat-square&logo=github&logoColor=white" alt="ACTUALIZADO"/>
   <br>
-  <sub>Último push: hace 13 min</sub>
+  <sub>Último push: hace 22 h</sub>
 </div>
 
 <div align="center">
@@ -236,7 +236,7 @@ IDEs
   <br>
   <img src="https://img.shields.io/badge/ACTUALIZADO-16A34A?style=flat-square&logo=github&logoColor=white" alt="ACTUALIZADO"/>
   <br>
-  <sub>Último push: hace 1 día</sub>
+  <sub>Último push: hace 2 días</sub>
 </div>
 <!-- AUTO-PROJECTS:END -->
 
